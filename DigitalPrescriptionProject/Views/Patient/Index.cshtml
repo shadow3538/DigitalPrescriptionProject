@@ -1,0 +1,159 @@
+```
+@model IEnumerable<DigitalPrescriptionProject.Models.Patient>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Patients</h1>
+
+<p>
+    <a asp-action="Create" class="btn btn-outline-primary">Create New</a>
+</p>
+
+
+<div class="table-responsive rounded rounded-3">
+    <table class="table table-hover table-bordered align-middle">
+
+        <thead class="table-dark">
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.FullName)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Age)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Phone)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Email)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.ImagePath)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.Gender)
+                </th>
+
+                <th>
+                    @Html.DisplayNameFor(model => model.CreatedAt)
+                </th>
+
+                <th>
+                    Actions
+                </th>
+            </tr>
+        </thead>
+
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>
+                        @Html.DisplayFor(model => item.FullName)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => item.Age)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => item.Phone)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => item.Email)
+                    </td>
+
+                    <td>
+                        @if (item.ImagePath is not null)
+                        {
+                            <img src="@item.ImagePath"
+                                 class="rounded-circle object-fit-cover mb-2"
+                                 width="50"
+                                 height="50"
+                                 style="object-fit: cover;" />
+                        }
+                        else
+                        {
+                            <span class="text-muted">No Image</span>
+                        }
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => item.Gender)
+                    </td>
+
+                    <td>
+                        @Html.DisplayFor(model => item.CreatedAt)
+                    </td>
+
+                    <td style="min-width: 220px;">
+                        <div class="d-flex flex-wrap gap-1">
+
+                            <a asp-action="Edit"
+                               asp-route-id="@item.PatientId"
+                               class="btn btn-sm btn-outline-warning">
+                                Edit
+                            </a>
+
+                            <a asp-action="Details"
+                               asp-route-id="@item.PatientId"
+                               class="btn btn-sm btn-outline-secondary">
+                                Details
+                            </a>
+
+                            <a asp-action="Delete"
+                               asp-route-id="@item.PatientId"
+                               class="btn btn-sm btn-outline-danger">
+                                Delete
+                            </a>
+
+                        </div>
+                    </td>
+                </tr>
+            }
+        </tbody>
+
+    </table>
+</div>
+
+
+<!-- Pagination -->
+<div class="d-flex justify-content-center flex-wrap gap-1 mt-4">
+
+    @if (ViewBag.CurrentPage > 1)
+    {
+        <a asp-action="Index"
+           asp-route-page="@(ViewBag.CurrentPage - 1)"
+           class="btn btn-outline-secondary btn-sm">
+            Previous
+        </a>
+    }
+
+    @for (int i = 1; i <= ViewBag.TotalPages; i++)
+    {
+        <a asp-action="Index"
+           asp-route-page="@i"
+           class="btn @(i == ViewBag.CurrentPage ? "btn-primary" : "btn-outline-primary") btn-sm">
+            @i
+        </a>
+    }
+
+    @if (ViewBag.CurrentPage < ViewBag.TotalPages)
+    {
+        <a asp-action="Index"
+           asp-route-page="@(ViewBag.CurrentPage + 1)"
+           class="btn btn-outline-secondary btn-sm">
+            Next
+        </a>
+    }
+
+</div>
+```

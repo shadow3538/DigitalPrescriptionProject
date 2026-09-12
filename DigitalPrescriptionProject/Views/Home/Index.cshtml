@@ -1,0 +1,155 @@
+﻿@{
+    Layout = null;
+}
+
+
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prescription Software</title>
+
+   
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link rel="stylesheet" href="/css/prescription-style.css.css">
+</head>
+<body>
+
+    <div class="dps-wrapper">
+
+       
+        <header class="top-nav">
+            <div class="nav-left">
+                <button id="toggle-btn" class="toggle-btn">
+                    <i class="fa-solid fa-bars"></i>
+                </button>
+
+                <div class="nav-action-icons">
+                    <a asp-controller="Home" title="Home" class="nav-icon-link">
+                        <i class="fa-solid fa-house"></i>
+                    </a>
+                    <a asp-controller="Prescription" title="Prescriptions" class="nav-icon-link">
+                        <i class="fa-solid fa-file-prescription"></i>
+                    </a>
+                    <a asp-controller="Patient" title="Patients" class="nav-icon-link">
+                        <i class="fa-solid fa-user-group"></i>
+                    </a>
+                </div>
+
+                <span class="brand-title">Prescription Software</span>
+            </div>
+
+            <div class="nav-right">
+                <div class="quick-link">
+                    <span>Quick Link</span>
+                    <button class="add-link-btn">+ Add Link</button>
+                </div>
+                <div class="user-profile">
+                    <i class="fa-regular fa-circle-user"></i>
+                    <span>
+                        <a asp-area="Identity"
+                           asp-page="/Account/Login"
+                           class="btn btn-link">
+                            Login
+                        </a>
+                    </span>
+                    <i class="fa-solid fa-chevron-down"></i>
+                </div>
+            </div>
+        </header>
+
+        <div class="main-container">
+           
+            <aside class="sidebar" id="sidebar">
+                <ul class="nav-menu">
+                    <li class="active">
+                        <a asp-controller="home">
+                            <i class="fa-solid fa-house"></i>
+                            <span class="link-text">Home</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Doctor">
+                            <i class="fa-solid fa-user-doctor"></i>
+                            <span class="link-text">Doctors</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="Prescription">
+                            <i class="fa-solid fa-file-prescription"></i>
+                            <span class="link-text">Prescriptions</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a asp-controller="patient">
+                            <i class="fa-solid fa-users"></i>
+                            <span class="link-text">Patients</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#">
+                            <i class="fa-solid fa-gear"></i>
+                            <span class="link-text">Settings</span>
+                        </a>
+                    </li>
+                </ul>
+
+                <div class="social-links">
+                    <a href="#"><i class="fa-brands fa-twitter"></i></a>
+                    <a href="#"><i class="fa-brands fa-facebook-f"></i></a>
+                    <a href="#"><i class="fa-brands fa-youtube"></i></a>
+                </div>
+            </aside>
+
+            <!-- Main Content Area -->
+            <main class="content-area">
+                <div class="lamps-container">
+                    <div class="lamp"></div>
+                    <div class="lamp"></div>
+                    <div class="lamp"></div>
+                </div>
+
+                <div class="inner-brand">
+                    <i class="fa-solid fa-stethoscope brand-icon"></i>
+                    <div>
+                        <h2>Prescription</h2>
+                        <h3>Software</h3>
+                    </div>
+                </div>
+
+                <div class="rx-side-menu">
+                    <div class="rx-item">
+                        <div class="rx-icon">R<sub>x</sub></div>
+                        <div class="rx-text">
+                            <span>Prescription</span>
+                            <small>Prescription</small>
+                        </div>
+                    </div>
+                </div>
+
+                <section class="hero-section">
+                    <div class="illustration-box">
+                        <div class="floating-card ECG"><i class="fa-solid fa-heart-pulse"></i></div>
+                        <div class="floating-card plant left-plant"><i class="fa-solid fa-seedling"></i></div>
+                        <div class="floating-card plant right-plant"><i class="fa-solid fa-seedling"></i></div>
+                        <div class="floating-card books"><i class="fa-solid fa-book-medical"></i></div>
+
+                        <div class="doctor-wrapper">
+                            <img src="https://cdn-icons-png.flaticon.com/512/387/387561.png" alt="Doctor" class="doctor-img">
+                        </div>
+                    </div>
+
+                    <div class="hero-text">
+                        <h1 class="main-heading">Digital Prescription Software</h1>
+                        <div class="badge">for Smart Doctors</div>
+                    </div>
+                </section>
+            </main>
+        </div>
+
+    </div>
+
+    <script src="/js/prescription-script.js"></script>
+</body>
+</html>

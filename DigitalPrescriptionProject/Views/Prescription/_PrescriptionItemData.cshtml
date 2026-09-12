@@ -1,0 +1,86 @@
+﻿@model Prescription
+
+<div class="table-responsive">
+
+    <table class="table table-bordered table-sm align-middle">
+
+        <thead>
+            <tr>
+                <th>
+                    <button type="submit"
+                            name="treatmentOperation"
+                            value="add"
+                            class="btn btn-outline-primary btn-sm">
+                        + Add
+                    </button>
+                </th>
+
+                <th>Medicine Name</th>
+                <th>Dosage</th>
+                <th>Duration</th>
+                <th>Time</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @for (int i = 0; i < Model.PrescriptionItems.Count; i++)
+            {
+                <tr>
+
+                    <td>
+                        <button type="submit"
+                                name="treatmentOperation"
+                                value="delete-@i"
+                                class="btn btn-outline-danger btn-sm">
+                            Delete
+                        </button>
+                    </td>
+
+                    <td>
+                        <input asp-for="PrescriptionItems[i].MedicineName"
+                               class="form-control form-control-sm" />
+
+                        <span asp-validation-for="PrescriptionItems[i].MedicineName"
+                              class="text-danger">
+                        </span>
+                    </td>
+
+                    <td>
+                        <input asp-for="PrescriptionItems[i].Dosage"
+                               class="form-control form-control-sm" />
+
+                        <span asp-validation-for="PrescriptionItems[i].Dosage"
+                              class="text-danger">
+                        </span>
+                    </td>
+
+                    <td>
+                        <input asp-for="PrescriptionItems[i].PrescriptionItemId"
+                               type="hidden" />
+
+                        <input asp-for="PrescriptionItems[i].Duration"
+                               class="form-control form-control-sm" />
+
+                        <span asp-validation-for="PrescriptionItems[i].Duration"
+                              class="text-danger">
+                        </span>
+                    </td>
+
+                    <td>
+                        <input asp-for="PrescriptionItems[i].Time"
+                               class="form-control form-control-sm" />
+
+                        <span asp-validation-for="PrescriptionItems[i].Time"
+                              class="text-danger">
+                        </span>
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>

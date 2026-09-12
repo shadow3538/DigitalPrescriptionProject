@@ -1,0 +1,307 @@
+﻿@model DigitalPrescriptionProject.Models.ViewModels.CreateUserViewModel
+
+@{
+    ViewData["Title"] = "Create User";
+}
+
+<h2>Create User</h2>
+
+<form asp-action="Create"
+      method="post"
+      enctype="multipart/form-data">
+
+    <div asp-validation-summary="ModelOnly"
+         class="text-danger">
+    </div>
+
+    <!-- Role -->
+    <div class="mb-3">
+        <label asp-for="Role" class="form-label">
+            Role
+        </label>
+
+        <select asp-for="Role"
+                class="form-select"
+                id="role">
+
+            <option value="">-- Select Role --</option>
+            <option value="Doctor">Doctor</option>
+            <option value="Patient">Patient</option>
+            <option value="Receptionist">Receptionist</option>
+
+        </select>
+
+        <span asp-validation-for="Role"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <!-- Common Information -->
+
+    <div class="mb-3">
+        <label asp-for="FirstName" class="form-label">
+            First Name
+        </label>
+
+        <input asp-for="FirstName"
+               class="form-control" />
+
+        <span asp-validation-for="FirstName"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="LastName" class="form-label">
+            Last Name
+        </label>
+
+        <input asp-for="LastName"
+               class="form-control" />
+
+        <span asp-validation-for="LastName"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Email" class="form-label">
+            Email
+        </label>
+
+        <input asp-for="Email"
+               class="form-control" />
+
+        <span asp-validation-for="Email"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <div class="mb-3">
+        <label asp-for="Password" class="form-label">
+            Password
+        </label>
+
+        <input asp-for="Password"
+               class="form-control" />
+
+        <span asp-validation-for="Password"
+              class="text-danger">
+        </span>
+    </div>
+
+
+    <!-- Doctor / Patient Common Fields -->
+
+    <div id="ageSection" class="mb-3" style="display:none;">
+
+        <label asp-for="Age" class="form-label">
+            Age
+        </label>
+
+        <input asp-for="Age"
+               type="number"
+               class="form-control" />
+
+        <span asp-validation-for="Age"
+              class="text-danger">
+        </span>
+
+    </div>
+
+
+    <div id="phoneSection" class="mb-3" style="display:none;">
+
+        <label asp-for="Phone" class="form-label">
+            Phone
+        </label>
+
+        <input asp-for="Phone"
+               class="form-control" />
+
+        <span asp-validation-for="Phone"
+              class="text-danger">
+        </span>
+
+    </div>
+
+
+    <!-- Doctor Only -->
+
+    <div id="doctorSection" style="display:none;">
+
+        <div class="mb-3">
+
+            <label asp-for="Speciality" class="form-label">
+                Speciality
+            </label>
+
+            <select asp-for="Speciality"
+                    class="form-select">
+
+                <option value="">
+                    -- Select Speciality --
+                </option>
+
+                @foreach (var speciality in
+                    Enum.GetValues<DigitalPrescriptionProject.Models.Speciality>())
+                {
+                    <option value="@speciality">
+                        @speciality
+                    </option>
+                }
+
+            </select>
+
+            <span asp-validation-for="Speciality"
+                  class="text-danger">
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- Patient Only -->
+
+    <div id="patientSection" style="display:none;">
+
+        <div class="mb-3">
+
+            <label asp-for="Gender" class="form-label">
+                Gender
+            </label>
+
+            <select asp-for="Gender"
+                    class="form-select">
+
+                <option value="">
+                    -- Select Gender --
+                </option>
+
+                @foreach (var gender in
+                    Enum.GetValues<DigitalPrescriptionProject.Models.Gender>())
+                {
+                    <option value="@gender">
+                        @gender
+                    </option>
+                }
+
+            </select>
+
+            <span asp-validation-for="Gender"
+                  class="text-danger">
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <!-- Image -->
+
+    <div id="uploadSection"
+         class="mb-3"
+         style="display:none;">
+
+        <label asp-for="Upload"
+               class="form-label">
+            Profile Image
+        </label>
+
+        <input asp-for="Upload"
+               type="file"
+               class="form-control"
+               accept="image/*" />
+
+        <span asp-validation-for="Upload"
+              class="text-danger">
+        </span>
+
+    </div>
+
+
+    <button type="submit"
+            class="btn btn-primary">
+        Create User
+    </button>
+
+</form>
+
+
+@section Scripts {
+
+    <partial name="_ValidationScriptsPartial" />
+
+    <script>
+
+        const role = document.getElementById("role");
+
+        const doctorSection =
+            document.getElementById("doctorSection");
+
+        const patientSection =
+            document.getElementById("patientSection");
+
+        const ageSection =
+            document.getElementById("ageSection");
+
+        const phoneSection =
+            document.getElementById("phoneSection");
+
+        const uploadSection =
+            document.getElementById("uploadSection");
+
+
+        function updateFields() {
+
+            const selectedRole = role.value;
+
+
+            // সব section আগে hide
+            doctorSection.style.display = "none";
+            patientSection.style.display = "none";
+            ageSection.style.display = "none";
+            phoneSection.style.display = "none";
+            uploadSection.style.display = "none";
+
+
+            // Doctor
+            if (selectedRole === "Doctor") {
+
+                doctorSection.style.display = "block";
+                ageSection.style.display = "block";
+                phoneSection.style.display = "block";
+                uploadSection.style.display = "block";
+            }
+
+
+            // Patient
+            else if (selectedRole === "Patient") {
+
+                patientSection.style.display = "block";
+                ageSection.style.display = "block";
+                phoneSection.style.display = "block";
+                uploadSection.style.display = "block";
+            }
+
+
+            // Receptionist
+            else if (selectedRole === "Receptionist") {
+
+                phoneSection.style.display = "block";
+            }
+        }
+
+
+        role.addEventListener("change", updateFields);
+
+        // Page load হলে initial state
+        updateFields();
+
+    </script>
+}

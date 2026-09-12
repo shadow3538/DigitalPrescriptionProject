@@ -1,0 +1,78 @@
+﻿@model Prescription
+
+<div class="table-responsive">
+
+    <table class="table table-bordered table-sm align-middle">
+
+        <thead>
+            <tr>
+                <th style="width: 90px;">
+                    <button type="submit"
+                            name="testOperation"
+                            value="add"
+                            class="btn btn-outline-primary btn-sm">
+                        + Add
+                    </button>
+                </th>
+
+                <th>Test Name</th>
+
+                <th>Instruction</th>
+            </tr>
+        </thead>
+
+        <tbody>
+
+            @for (int i = 0; i < Model.PrescribedTests.Count; i++)
+            {
+                <tr>
+
+                    <td>
+                        <button type="submit"
+                                name="testOperation"
+                                value="delete-@i"
+                                class="btn btn-outline-danger btn-sm">
+                            Delete
+                        </button>
+                    </td>
+
+                    <td>
+
+                        <input asp-for="PrescribedTests[i].Id"
+                               type="hidden" />
+
+                        <select asp-for="PrescribedTests[i].TestName"
+                                asp-items="@Html.GetEnumSelectList<TestName>()"
+                                class="form-select form-select-sm">
+
+                            <option value="">
+                                Select Test
+                            </option>
+
+                        </select>
+
+                        <span asp-validation-for="PrescribedTests[i].TestName"
+                              class="text-danger">
+                        </span>
+
+                    </td>
+
+                    <td>
+
+                        <input asp-for="PrescribedTests[i].Instruction"
+                               class="form-control form-control-sm" />
+
+                        <span asp-validation-for="PrescribedTests[i].Instruction"
+                              class="text-danger">
+                        </span>
+
+                    </td>
+
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+
+</div>
