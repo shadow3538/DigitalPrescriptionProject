@@ -31,7 +31,6 @@ public class PatientController : Controller
 
         IQueryable<Patient> query = _context.Patients;
 
-        // Patient শুধু নিজের profile দেখতে পারবে
         if (User.IsInRole("Patient"))
         {
             var user = await _userManager.GetUserAsync(User);
@@ -76,7 +75,6 @@ public class PatientController : Controller
             return NotFound();
         }
 
-        // Patient শুধু নিজের profile দেখতে পারবে
         if (User.IsInRole("Patient"))
         {
             var user = await _userManager.GetUserAsync(User);
@@ -195,7 +193,6 @@ public class PatientController : Controller
             return NotFound();
         }
 
-        // Patient শুধু নিজের profile edit করতে পারবে
         if (User.IsInRole("Patient"))
         {
             var user = await _userManager.GetUserAsync(User);
@@ -213,68 +210,60 @@ public class PatientController : Controller
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,Patient")]
     public async Task<IActionResult> Edit(
-        int? id,
-        Patient patient,
-        [FromServices] IWebHostEnvironment env)
+    int? id,
+    Patient patient,
+    [FromServices] IWebHostEnvironment env)
     {
         if (id != patient.PatientId)
-        {
             return NotFound();
-        }
 
-        // Database থেকে original patient বের করি
         var existingPatient = await _context.Patients
-            .AsNoTracking()
-            .FirstOrDefaultAsync(
-                p => p.PatientId == patient.PatientId
-            );
+            .FirstOrDefaultAsync(p => p.PatientId == patient.PatientId);
 
         if (existingPatient == null)
-        {
             return NotFound();
-        }
 
-        // Patient অন্য Patient-এর profile modify করতে পারবে না
         if (User.IsInRole("Patient"))
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null || existingPatient.UserId != user.Id)
+            if (user == null ||
+                existingPatient.UserId != user.Id)
+            {
                 return Forbid();
-
-            // UserId পরিবর্তন করতে পারবে না
-            patient.UserId = existingPatient.UserId;
-
-            // Email-ও এখানে Identity account-এর email-এর সাথে
-            // manually change করার সুযোগ না দেওয়াই নিরাপদ
-            patient.Email = existingPatient.Email;
+            }
         }
 
-        if (ModelState.IsValid)
+        if (!ModelState.IsValid)
+            return View(patient);
+
+        try
         {
-            try
+
+            existingPatient.FirstName = patient.FirstName;
+            existingPatient.LastName = patient.LastName;
+            existingPatient.Age = patient.Age;
+            existingPatient.Phone = patient.Phone;
+            existingPatient.Gender = patient.Gender;
+
+
+            if (patient.Upload != null)
             {
-                // নতুন image থাকলে save করবে
-                patient.SavePatientImage(env);
-
-                _context.Update(patient);
-
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!PatientExists(patient.PatientId))
-                {
-                    return NotFound();
-                }
-
-                throw;
+                existingPatient.Upload = patient.Upload;
+                existingPatient.SavePatientImage(env);
             }
 
-            return RedirectToAction(nameof(Index));
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!PatientExists(patient.PatientId))
+                return NotFound();
+
+            throw;
         }
 
-        return View(patient);
+        return RedirectToAction(nameof(Index));
     }
 
 

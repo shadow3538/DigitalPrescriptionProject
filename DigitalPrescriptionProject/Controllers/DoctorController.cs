@@ -197,63 +197,61 @@ public class DoctorController : Controller
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
     [HttpPost]
     [ValidateAntiForgeryToken]
-    [Authorize(Roles =("Admin, Doctor"))]
-    public async Task<IActionResult> Edit(int? doctorid, Doctor doctor, [FromServices] IWebHostEnvironment env)
+    [Authorize(Roles = "Admin,Doctor")]
+    public async Task<IActionResult> Edit(
+     int? doctorid,
+     Doctor doctor,
+     [FromServices] IWebHostEnvironment env)
     {
         if (doctorid != doctor.DoctorId)
-        {
             return NotFound();
-        }
+
+        var existingDoctor = await _context.Doctors
+            .FirstOrDefaultAsync(d => d.DoctorId == doctor.DoctorId);
+
+        if (existingDoctor == null)
+            return NotFound();
 
         if (User.IsInRole("Doctor"))
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null)
+            if (user == null ||
+                existingDoctor.UserId != user.Id)
+            {
                 return Forbid();
+            }
+        }
 
-            var existingDoctor = await _context.Doctors
-                .AsNoTracking()
-                .FirstOrDefaultAsync(d => d.DoctorId == doctor.DoctorId);
+        if (!ModelState.IsValid)
+            return View(doctor);
 
-            if (existingDoctor == null)
+        try
+        {
+            existingDoctor.FirstName = doctor.FirstName;
+            existingDoctor.LastName = doctor.LastName;
+            existingDoctor.Speciality = doctor.Speciality;
+            existingDoctor.Age = doctor.Age;
+            existingDoctor.Phone = doctor.Phone;
+
+
+            if (doctor.Upload != null)
+            {
+                existingDoctor.Upload = doctor.Upload;
+                existingDoctor.SaveDoctorImage(env);
+            }
+
+            await _context.SaveChangesAsync();
+        }
+        catch (DbUpdateConcurrencyException)
+        {
+            if (!DoctorExists(doctor.DoctorId))
                 return NotFound();
 
-            if (existingDoctor.UserId != user.Id)
-                return Forbid();
-
-            
-            doctor.UserId = existingDoctor.UserId;
+            throw;
         }
 
-        if (ModelState.IsValid)
-        {
-            try
-            {
-                if (doctor.Upload is not null)
-                {
-                    var fileName = $"/Images/DoctorsImage_{Guid.NewGuid()}_{doctor.Upload.FileName}";
-                    using Stream stream = System.IO.File.Create(env.WebRootPath + fileName);
-                    await doctor.Upload.CopyToAsync(stream);
-                    doctor.ImagePath = fileName;
-                }
-                _context.Update(doctor);
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!DoctorExists(doctor.DoctorId))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction(nameof(Index));
-        }
-        return View(doctor);
+        return RedirectToAction(nameof(Index));
     }
 
     // GET: DOCTORS/Delete/5

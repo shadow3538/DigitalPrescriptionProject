@@ -6,7 +6,6 @@
 
 <div class="container-fluid py-4">
 
-    <!-- Page Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
 
         <div>
@@ -27,8 +26,6 @@
 
     </div>
 
-
-    <!-- Prescription Card -->
     <div class="card border-0 shadow-sm">
 
         <!-- Card Header -->
@@ -55,7 +52,6 @@
         </div>
 
 
-        <!-- Card Body -->
         <div class="card-body p-0">
 
             <div class="table-responsive">
@@ -111,7 +107,6 @@
                             {
                                 <tr>
 
-                                    <!-- Visit Date -->
                                     <td class="ps-4">
                                         <div class="fw-semibold">
                                             @item.VisitDate.ToString("dd MMM yyyy")
@@ -122,8 +117,6 @@
                                         </small>
                                     </td>
 
-
-                                    <!-- Patient -->
                                     <td>
                                         @if (item.Patient != null)
                                         {
@@ -159,8 +152,6 @@
                                         }
                                     </td>
 
-
-                                    <!-- Doctor -->
                                     <td>
                                         @if (item.Doctor != null)
                                         {
@@ -184,7 +175,6 @@
                                     </td>
 
 
-                                    <!-- Diagnosis -->
                                     <td>
 
                                         @if (!string.IsNullOrWhiteSpace(item.Diagnosis))
@@ -202,8 +192,6 @@
 
                                     </td>
 
-
-                                    <!-- Clinical Notes -->
                                     <td style="max-width:220px;">
 
                                         @if (!string.IsNullOrWhiteSpace(item.ClinicalNotes))
@@ -225,7 +213,6 @@
                                     </td>
 
 
-                                    <!-- Medicine Count -->
                                     <td class="text-center">
 
                                         <span class="badge rounded-pill
@@ -241,7 +228,6 @@
                                     </td>
 
 
-                                    <!-- Test Count -->
                                     <td class="text-center">
 
                                         <span class="badge rounded-pill
@@ -256,13 +242,10 @@
 
                                     </td>
 
-
-                                    <!-- Actions -->
                                     <td class="text-center pe-4">
 
                                         <div class="btn-group" role="group">
 
-                                            <!-- Details -->
                                             <a asp-action="Details"
                                                asp-route-id="@item.PrescriptionId"
                                                class="btn btn-sm btn-outline-info"
@@ -273,8 +256,6 @@
 
                                             </a>
 
-
-                                            <!-- Edit -->
                                             <a asp-action="Edit"
                                                asp-route-id="@item.PrescriptionId"
                                                class="btn btn-sm btn-outline-primary"
@@ -286,7 +267,6 @@
                                             </a>
 
 
-                                            <!-- Delete -->
                                             <a asp-action="Delete"
                                                asp-route-id="@item.PrescriptionId"
                                                class="btn btn-sm btn-outline-danger"
@@ -306,7 +286,7 @@
                         }
                         else
                         {
-                            <!-- Empty State -->
+
                             <tr>
 
                                 <td colspan="8" class="text-center py-5">

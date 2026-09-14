@@ -37,8 +37,6 @@ namespace DigitalPrescriptionProject.Models
         [NotMapped]
         public IFormFile? Upload { get; set; }
 
-        //[NotMapped]
-        //public string Operation { get; set; } = "save";
 
         public Gender Gender { get; set; }
 
@@ -51,14 +49,38 @@ namespace DigitalPrescriptionProject.Models
 
         public void SavePatientImage(IWebHostEnvironment env)
         {
-            if(Upload is not null)
-            {
-                var fileName = $"/Images/PatientsImage/_{Guid.NewGuid()}_{Upload.FileName}";
-                using Stream stream = File.Create(env.WebRootPath + fileName);
-                Upload.CopyTo(stream);
-                ImagePath = fileName;
-            }
+            if (Upload is null || Upload.Length == 0)
+                return;
 
+            const long maxFileSize = 2 * 1024 * 1024; 
+
+            if (Upload.Length > maxFileSize)
+                throw new InvalidOperationException("Image size cannot exceed 2 MB.");
+
+            var allowedExtensions = new[] { ".jpg", ".jpeg", ".png", ".webp" };
+
+            var extension = Path.GetExtension(Upload.FileName)
+                .ToLowerInvariant();
+
+            if (!allowedExtensions.Contains(extension))
+                throw new InvalidOperationException("Only JPG, JPEG, PNG and WEBP images are allowed.");
+
+            var folderPath = Path.Combine(
+                env.WebRootPath,
+                "Images",
+                "PatientsImage");
+
+            Directory.CreateDirectory(folderPath);
+
+            
+            var newFileName = $"{Guid.NewGuid():N}{extension}";
+
+            var physicalPath = Path.Combine(folderPath, newFileName);
+
+            using Stream stream = File.Create(physicalPath);
+            Upload.CopyTo(stream);
+
+            ImagePath = $"/Images/PatientsImage/{newFileName}";
         }
     }
 

@@ -29,14 +29,13 @@ builder.Services.AddControllersWithViews();
 
 builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 {
-    // Password Security
+
     options.Password.RequireDigit = true;
     options.Password.RequireLowercase = true;
     options.Password.RequireUppercase = true;
     options.Password.RequireNonAlphanumeric = true;
     options.Password.RequiredLength = 8;
 
-    // Account Lockout
     options.Lockout.DefaultLockoutTimeSpan =
         TimeSpan.FromMinutes(15);
 
@@ -44,7 +43,7 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
     options.Lockout.AllowedForNewUsers = true;
 
-    // Email Confirmation
+    
     options.SignIn.RequireConfirmedAccount = true;
 })
 .AddRoles<ApplicationRole>()
@@ -53,25 +52,13 @@ builder.Services.AddDefaultIdentity<ApplicationUser>(options =>
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    // Authentication cookie lifetime
+    
     options.ExpireTimeSpan = TimeSpan.FromMinutes(30);
-
-    // Sliding expiration
     options.SlidingExpiration = true;
-
-    // Login page
     options.LoginPath = "/Identity/Account/Login";
-
-    // Access denied page
     options.AccessDeniedPath = "/Identity/Account/AccessDenied";
-
-    // Prevent cookie from being accessed by JavaScript
     options.Cookie.HttpOnly = true;
-
-    // HTTPS only
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-
-    // CSRF protection
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
