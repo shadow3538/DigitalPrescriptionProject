@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Identity;
 using DigitalPrescriptionProject.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize(Roles = ("Admin, Doctor"))]
+[Authorize(Roles = ("Admin,Doctor"))]
 public class DoctorController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -76,18 +76,23 @@ public class DoctorController : Controller
     // POST: DOCTORS/Create
     // To protect from overposting attacks, enable the specific properties you want to bind to.
     // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-    [HttpPost]
-    [ValidateAntiForgeryToken]
-    [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(
-     CreateDoctorViewModel model,
-     [FromServices] IWebHostEnvironment env)
+
+[HttpPost]
+[ValidateAntiForgeryToken]
+[Authorize(Roles = "Admin")]
+public async Task<IActionResult> Create(
+    CreateDoctorViewModel model,
+    [FromServices] IWebHostEnvironment env)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
+        
+        var temporaryPassword = GenerateTemporaryPassword();
+
+ 
         var user = new ApplicationUser
         {
             UserName = model.Email,
@@ -97,7 +102,7 @@ public class DoctorController : Controller
 
         var userResult = await _userManager.CreateAsync(
             user,
-            model.Password
+            temporaryPassword
         );
 
         if (!userResult.Succeeded)
@@ -113,6 +118,8 @@ public class DoctorController : Controller
             return View(model);
         }
 
+  
+
         var roleResult = await _userManager.AddToRoleAsync(
             user,
             "Doctor"
@@ -120,6 +127,7 @@ public class DoctorController : Controller
 
         if (!roleResult.Succeeded)
         {
+
             await _userManager.DeleteAsync(user);
 
             foreach (var error in roleResult.Errors)
@@ -141,9 +149,10 @@ public class DoctorController : Controller
             Age = model.Age,
             Phone = model.Phone,
             Email = model.Email,
+
+
             UserId = user.Id
         };
-
 
         if (model.Upload is not null)
         {
@@ -160,12 +169,24 @@ public class DoctorController : Controller
             doctor.ImagePath = fileName;
         }
 
+
         _context.Doctors.Add(doctor);
 
         await _context.SaveChangesAsync();
 
+
+        TempData["DoctorEmail"] = model.Email;
+        TempData["TemporaryPassword"] = temporaryPassword;
+
         return RedirectToAction(nameof(Index));
     }
+
+    private string GenerateTemporaryPassword()
+    {
+        return $"Doc@{Guid.NewGuid().ToString("N")[..8]}9!";
+    }
+
+
 
     // GET: DOCTORS/Edit/5
 

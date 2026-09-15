@@ -106,35 +106,66 @@ public class LoginModel : PageModel
     {
         returnUrl ??= Url.Content("~/");
 
-        ExternalLogins = (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
+        ExternalLogins =
+            (await _signInManager.GetExternalAuthenticationSchemesAsync()).ToList();
 
         if (ModelState.IsValid)
         {
-            // This doesn't count login failures towards account lockout
-            // To enable password failures to trigger account lockout, set lockoutOnFailure: true
-            var result = await _signInManager.PasswordSignInAsync(Input.Email, Input.Password, Input.RememberMe, lockoutOnFailure: true);
+            // Check email and password
+            var result = await _signInManager.PasswordSignInAsync(
+                Input.Email,
+                Input.Password,
+                Input.RememberMe,
+                lockoutOnFailure: true);
+
             if (result.Succeeded)
             {
                 _logger.LogInformation("User logged in.");
+
+                // Get the logged-in user
+                var user = await _signInManager.UserManager
+                    .FindByEmailAsync(Input.Email);
+
+                if (user != null && user.MustChangePassword)
+                {
+                    return RedirectToPage(
+    "/Account/Manage/ChangePassword",
+    new
+    {
+        area = "Identity"
+    });
+                }
+
                 return LocalRedirect(returnUrl);
             }
+
             if (result.RequiresTwoFactor)
             {
-                return RedirectToPage("./LoginWith2fa", new { ReturnUrl = returnUrl, RememberMe = Input.RememberMe });
+                return RedirectToPage(
+                    "./LoginWith2fa",
+                    new
+                    {
+                        ReturnUrl = returnUrl,
+                        RememberMe = Input.RememberMe
+                    });
             }
+
             if (result.IsLockedOut)
             {
                 _logger.LogWarning("User account locked out.");
+
                 return RedirectToPage("./Lockout");
             }
-            else
-            {
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                return Page();
-            }
+
+            ModelState.AddModelError(
+                string.Empty,
+                "Invalid login attempt.");
+
+            return Page();
         }
 
-        // If we got this far, something failed, redisplay form
         return Page();
     }
+
+
 }

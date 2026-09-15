@@ -1,5 +1,28 @@
 @model IEnumerable<DigitalPrescriptionProject.Models.Doctor>
 
+@if (TempData["DoctorEmail"] != null)
+{
+    <div class="alert alert-success">
+        <h5>Doctor Account Created Successfully</h5>
+
+        <p>
+            <strong>Email:</strong>
+            @TempData["DoctorEmail"]
+        </p>
+
+        <p>
+            <strong>Temporary Password:</strong>
+            @TempData["TemporaryPassword"]
+        </p>
+
+        <hr />
+
+        <p class="mb-0">
+            Give these login credentials to the doctor.
+            The doctor should change the password after the first login.
+        </p>
+    </div>
+}
 @{
     ViewData["Title"] = "Index";
 }

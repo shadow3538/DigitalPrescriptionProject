@@ -1,16 +1,15 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿
+using System.ComponentModel.DataAnnotations;
 
 namespace DigitalPrescriptionProject.Models.ViewModels
 {
-
-
     public class CreateDoctorViewModel
     {
         public string FirstName { get; set; } = "";
 
         public string LastName { get; set; } = "";
 
-        public Speciality Speciality { get; set; } 
+        public Speciality Speciality { get; set; }
 
         public int Age { get; set; }
 
@@ -20,10 +19,7 @@ namespace DigitalPrescriptionProject.Models.ViewModels
         [EmailAddress]
         public string Email { get; set; } = "";
 
-        [Required]
-        [DataType(DataType.Password)]
-        public string Password { get; set; } = "";
-
         public IFormFile? Upload { get; set; }
     }
 }
+
