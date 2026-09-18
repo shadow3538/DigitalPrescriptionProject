@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Logging;
+using Microsoft.EntityFrameworkCore;
 using DigitalPrescriptionProject.Data;
 
 namespace DigitalPrescriptionProject.Areas.Identity.Pages.Account.Manage;
@@ -17,75 +18,62 @@ public class ChangePasswordModel : PageModel
     private readonly UserManager<ApplicationUser> _userManager;
     private readonly SignInManager<ApplicationUser> _signInManager;
     private readonly ILogger<ChangePasswordModel> _logger;
+    private readonly ApplicationDbContext _context;
 
     public ChangePasswordModel(
         UserManager<ApplicationUser> userManager,
         SignInManager<ApplicationUser> signInManager,
-        ILogger<ChangePasswordModel> logger)
+        ILogger<ChangePasswordModel> logger,
+        ApplicationDbContext context)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _logger = logger;
+        _context = context;
     }
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     [BindProperty]
     public InputModel Input { get; set; } = default!;
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     [TempData]
     public string? StatusMessage { get; set; }
 
-    /// <summary>
-    ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-    ///     directly from your code. This API may change or be removed in future releases.
-    /// </summary>
     public class InputModel
     {
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [Required]
         [DataType(DataType.Password)]
         [Display(Name = "Current password")]
         public string OldPassword { get; set; } = default!;
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [Required]
-        [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 6)]
+        [StringLength(
+            100,
+            ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.",
+            MinimumLength = 6)]
         [DataType(DataType.Password)]
         [Display(Name = "New password")]
         public string NewPassword { get; set; } = default!;
 
-        /// <summary>
-        ///     This API supports the ASP.NET Core Identity default UI infrastructure and is not intended to be used
-        ///     directly from your code. This API may change or be removed in future releases.
-        /// </summary>
         [DataType(DataType.Password)]
         [Display(Name = "Confirm new password")]
-        [Compare("NewPassword", ErrorMessage = "The new password and confirmation password do not match.")]
+        [Compare(
+            "NewPassword",
+            ErrorMessage = "The new password and confirmation password do not match.")]
         public string? ConfirmPassword { get; set; }
     }
 
     public async Task<IActionResult> OnGetAsync()
     {
         var user = await _userManager.GetUserAsync(User);
+
         if (user == null)
         {
-            return NotFound($"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
+            return NotFound(
+                $"Unable to load user with ID '{_userManager.GetUserId(User)}'.");
         }
 
         var hasPassword = await _userManager.HasPasswordAsync(user);
+
         if (!hasPassword)
         {
             return RedirectToPage("./SetPassword");
@@ -93,7 +81,6 @@ public class ChangePasswordModel : PageModel
 
         return Page();
     }
-
 
     public async Task<IActionResult> OnPostAsync()
     {
@@ -128,10 +115,12 @@ public class ChangePasswordModel : PageModel
             return Page();
         }
 
+       
         user.MustChangePassword = false;
 
         await _userManager.UpdateAsync(user);
 
+ 
         await _signInManager.RefreshSignInAsync(user);
 
         _logger.LogInformation(
@@ -139,8 +128,19 @@ public class ChangePasswordModel : PageModel
 
         StatusMessage = "Your password has been changed.";
 
-        return RedirectToPage();
+
+        var doctor = await _context.Doctors
+            .FirstOrDefaultAsync(d => d.UserId == user.Id);
+
+        if (doctor != null)
+        {
+            return RedirectToAction(
+                "Details",
+                "Doctor",
+                new { id = doctor.DoctorId });
+        }
+
+        return RedirectToPage("/Index");
     }
-
-
 }
+

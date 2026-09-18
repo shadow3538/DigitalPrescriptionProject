@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
+using DigitalPrescriptionProject.Filters;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +24,12 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddTransient<IEmailSender, DevelopmentEmailSender>();
 
-builder.Services.AddControllersWithViews();
+builder.Services.AddScoped<MustChangePasswordFilter>();
+
+builder.Services.AddControllersWithViews(op =>
+{
+    op.Filters.AddService<MustChangePasswordFilter>();
+});
 
 
 
@@ -62,7 +68,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SameSite = SameSiteMode.Lax;
 });
 
-builder.Services.AddControllersWithViews();
 
 builder.Services.AddSerilog(op =>
 {

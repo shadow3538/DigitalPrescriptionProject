@@ -24,9 +24,6 @@
     background-color: #f8fafc;
 }
 
-    /* ----------------------------------- */
-    /* Top Navbar */
-    /* ----------------------------------- */
     .dps-wrapper .top-nav {
         height: 50px;
         background-color: #0d5c58;
@@ -118,9 +115,6 @@
         cursor: pointer;
     }
 
-    /* ----------------------------------- */
-    /* Layout & Flex Fixed */
-    /* ----------------------------------- */
     .dps-wrapper .main-container {
         display: flex;
         width: 100%;
@@ -128,9 +122,8 @@
         position: relative;
     }
 
-    /* Fixed Sidebar Width */
     .dps-wrapper .sidebar {
-        width: 60px; /* Collapsed Width */
+        width: 60px; 
         background-color: #0e6b66;
         display: flex;
         flex-direction: column;
@@ -147,11 +140,10 @@
         left: 0;
     }
 
-        /* Sidebar Hover / Expand */
         .dps-wrapper .sidebar:hover,
         .dps-wrapper .sidebar.expanded {
             width: 180px;
-            z-index: 99; /* মাউস নিলে সাইডবার উপরে ভেসে উঠবে */
+            z-index: 99; 
         }
 
     .dps-wrapper .nav-menu {
@@ -208,11 +200,8 @@
             font-size: 14px;
         }
 
-    /* ----------------------------------- */
-    /* Content Area Fix (Margin added) */
-    /* ----------------------------------- */
     .dps-wrapper .content-area {
-        margin-left: 60px; /* সাইডবারের সমান মার্জিন দেওয়া হলো যাতে সাইডবার ঢাকা না পড়ে */
+        margin-left: 60px; 
         width: calc(100% - 60px);
         height: 100%;
         position: relative;
@@ -225,7 +214,6 @@
         overflow-y: auto;
     }
 
-    /* Hanging Lamps */
     .dps-wrapper .lamps-container {
         position: absolute;
         top: 0;
@@ -263,7 +251,6 @@
         border-radius: 6px 6px 2px 2px;
     }
 
-    /* Inner Brand Logo */
     .dps-wrapper .inner-brand {
         position: absolute;
         top: 25px;
@@ -290,7 +277,6 @@
         font-weight: 500;
     }
 
-    /* Hero Section */
     .dps-wrapper .hero-section {
         text-align: center;
     }
@@ -363,7 +349,6 @@
         font-weight: 500;
     }
 
-    /* Rx Side Menu */
     .dps-wrapper .rx-side-menu {
         position: absolute;
         top: 25px;
@@ -396,3 +381,18 @@
         font-size: 11px;
         color: #666;
     }
+
+
+.brand-title {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 600;
+}
+
+
+@media (max-width: 768px) {
+    .brand-title {
+        font-size: 14px;
+    }
+}

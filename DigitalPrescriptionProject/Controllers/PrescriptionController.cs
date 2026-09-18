@@ -23,14 +23,15 @@ namespace DigitalPrescriptionProject.Controllers
         }
 
 
-
         public async Task<IActionResult> Index()
         {
-            IQueryable<Prescription> query = _context.Prescriptions
+            IQueryable<Prescription> query =
+                _context.Prescriptions
                 .Include(p => p.PrescribedTests)
                 .Include(p => p.PrescriptionItems)
                 .Include(p => p.Doctor)
                 .Include(p => p.Patient);
+
 
             if (User.IsInRole("Doctor"))
             {
@@ -39,7 +40,8 @@ namespace DigitalPrescriptionProject.Controllers
                 if (doctor == null)
                     return Forbid();
 
-                query = query.Where(p => p.DoctorId == doctor.DoctorId);
+                query = query.Where(
+                    p => p.DoctorId == doctor.DoctorId);
             }
 
 
@@ -50,7 +52,8 @@ namespace DigitalPrescriptionProject.Controllers
                 if (patient == null)
                     return Forbid();
 
-                query = query.Where(p => p.PatientId == patient.PatientId);
+                query = query.Where(
+                    p => p.PatientId == patient.PatientId);
             }
 
 
@@ -64,16 +67,22 @@ namespace DigitalPrescriptionProject.Controllers
             if (id == null)
                 return NotFound();
 
-            var prescription = await _context.Prescriptions
+
+            var prescription =
+                await _context.Prescriptions
+
                 .Include(p => p.Patient)
                 .Include(p => p.Doctor)
                 .Include(p => p.PrescribedTests)
                 .Include(p => p.PrescriptionItems)
+
                 .FirstOrDefaultAsync(
                     p => p.PrescriptionId == id);
 
+
             if (prescription == null)
                 return NotFound();
+
 
             if (User.IsInRole("Doctor"))
             {
@@ -85,6 +94,7 @@ namespace DigitalPrescriptionProject.Controllers
                     return Forbid();
                 }
             }
+
 
             if (User.IsInRole("Patient"))
             {
@@ -97,11 +107,12 @@ namespace DigitalPrescriptionProject.Controllers
                 }
             }
 
+
             return View(prescription);
         }
 
 
-
+ 
         [Authorize(Roles = "Doctor,Admin")]
         public IActionResult Create()
         {
@@ -113,174 +124,15 @@ namespace DigitalPrescriptionProject.Controllers
 
 
 
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Doctor,Admin")]
         public async Task<IActionResult> Create(
             Prescription prescription,
-            [FromServices] IWebHostEnvironment env,
             string treatmentOperation = "save",
             string testOperation = "save")
         {
-
-            if (User.IsInRole("Doctor"))
-            {
-                var doctor = await GetCurrentDoctorAsync();
-
-                if (doctor == null)
-                    return Forbid();
-
-                prescription.DoctorId = doctor.DoctorId;
-            }
-
-            patientDropDown(prescription.PatientId);
-            DoctorDropDown(prescription.DoctorId);
-
-
-            if (treatmentOperation.Equals(
-                "add",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                prescription.PrescriptionItems ??= new List<PrescriptionItem>();
-
-                prescription.PrescriptionItems.Add(
-                    new PrescriptionItem());
-
-                ModelState.Clear();
-
-                return View(prescription);
-            }
-
-
-            if (treatmentOperation.StartsWith(
-                "delete-",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                if (int.TryParse(
-                    treatmentOperation.Replace("delete-", ""),
-                    out int index))
-                {
-                    if (prescription.PrescriptionItems != null &&
-                        index >= 0 &&
-                        index < prescription.PrescriptionItems.Count)
-                    {
-                        prescription.PrescriptionItems.RemoveAt(index);
-                    }
-                }
-
-                ModelState.Clear();
-
-                return View(prescription);
-            }
-
-
-            if (testOperation.Equals(
-                "add",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                prescription.PrescribedTests ??= new List<PrescribedTest>();
-
-                prescription.PrescribedTests.Add(
-                    new PrescribedTest());
-
-                ModelState.Clear();
-
-                return View(prescription);
-            }
-
-
-            if (testOperation.StartsWith(
-                "delete-",
-                StringComparison.OrdinalIgnoreCase))
-            {
-                if (int.TryParse(
-                    testOperation.Replace("delete-", ""),
-                    out int index))
-                {
-                    if (prescription.PrescribedTests != null &&
-                        index >= 0 &&
-                        index < prescription.PrescribedTests.Count)
-                    {
-                        prescription.PrescribedTests.RemoveAt(index);
-                    }
-                }
-
-                ModelState.Clear();
-
-                return View(prescription);
-            }
-
-
-
-            if (ModelState.IsValid)
-            {
-                _context.Prescriptions.Add(prescription);
-
-                await _context.SaveChangesAsync();
-
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(prescription);
-        }
-
-
-
-        [Authorize(Roles = "Doctor,Admin")]
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-                return NotFound();
-
-            var prescription = await _context.Prescriptions
-                .Include(p => p.PrescribedTests)
-                .Include(p => p.PrescriptionItems)
-                .Include(p => p.Doctor)
-                .Include(p => p.Patient)
-                .FirstOrDefaultAsync(
-                    p => p.PrescriptionId == id);
-
-            if (prescription == null)
-                return NotFound();
-
-
-            if (User.IsInRole("Doctor"))
-            {
-                var doctor = await GetCurrentDoctorAsync();
-
-                if (doctor == null ||
-                    prescription.DoctorId != doctor.DoctorId)
-                {
-                    return Forbid();
-                }
-            }
-
-            patientDropDown(prescription.PatientId);
-            DoctorDropDown(prescription.DoctorId);
-
-            return View(prescription);
-        }
-
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Authorize(Roles = "Doctor,Admin")]
-        public async Task<IActionResult> Edit(
-            Prescription prescription,
-            [FromServices] IWebHostEnvironment env,
-            string treatmentOperation = "save",
-            string testOperation = "save")
-        {
-
-            var existingPrescription = await _context.Prescriptions
-                .Include(p => p.PrescribedTests)
-                .Include(p => p.PrescriptionItems)
-                .FirstOrDefaultAsync(
-                    p => p.PrescriptionId ==
-                         prescription.PrescriptionId);
-
-            if (existingPrescription == null)
-                return NotFound();
 
 
             if (User.IsInRole("Doctor"))
@@ -289,24 +141,13 @@ namespace DigitalPrescriptionProject.Controllers
 
                 if (doctor == null)
                     return Forbid();
-
-                if (existingPrescription.DoctorId !=
-                    doctor.DoctorId)
-                {
-                    return Forbid();
-                }
 
                 prescription.DoctorId =
-                    existingPrescription.DoctorId;
-
-                prescription.PatientId =
-                    existingPrescription.PatientId;
+                    doctor.DoctorId;
             }
-
 
             patientDropDown(prescription.PatientId);
             DoctorDropDown(prescription.DoctorId);
-
 
 
             if (treatmentOperation.Equals(
@@ -330,7 +171,8 @@ namespace DigitalPrescriptionProject.Controllers
                 StringComparison.OrdinalIgnoreCase))
             {
                 if (int.TryParse(
-                    treatmentOperation.Replace("delete-", ""),
+                    treatmentOperation.Replace(
+                        "delete-", ""),
                     out int index))
                 {
                     if (prescription.PrescriptionItems != null &&
@@ -362,13 +204,13 @@ namespace DigitalPrescriptionProject.Controllers
                 return View(prescription);
             }
 
-
             if (testOperation.StartsWith(
                 "delete-",
                 StringComparison.OrdinalIgnoreCase))
             {
                 if (int.TryParse(
-                    testOperation.Replace("delete-", ""),
+                    testOperation.Replace(
+                        "delete-", ""),
                     out int index))
                 {
                     if (prescription.PrescribedTests != null &&
@@ -385,13 +227,202 @@ namespace DigitalPrescriptionProject.Controllers
             }
 
 
+            if (ModelState.IsValid)
+            {
+                _context.Prescriptions.Add(
+                    prescription);
+
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Index));
+            }
+
+
+            return View(prescription);
+        }
+
+
+
+
+        [Authorize(Roles = "Doctor,Admin")]
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+                return NotFound();
+
+
+            var prescription =
+                await _context.Prescriptions
+
+                .Include(p => p.PrescribedTests)
+                .Include(p => p.PrescriptionItems)
+                .Include(p => p.Doctor)
+                .Include(p => p.Patient)
+
+                .FirstOrDefaultAsync(
+                    p => p.PrescriptionId == id);
+
+
+            if (prescription == null)
+                return NotFound();
+
+
+            if (User.IsInRole("Doctor"))
+            {
+                var doctor =
+                    await GetCurrentDoctorAsync();
+
+                if (doctor == null ||
+                    prescription.DoctorId != doctor.DoctorId)
+                {
+                    return Forbid();
+                }
+            }
+
+
+            patientDropDown(
+                prescription.PatientId);
+
+            DoctorDropDown(
+                prescription.DoctorId);
+
+
+            return View(prescription);
+        }
+
+
+
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Doctor,Admin")]
+        public async Task<IActionResult> Edit(
+            Prescription prescription,
+            string treatmentOperation = "save",
+            string testOperation = "save")
+        {
+
+            var existingPrescription =
+                await _context.Prescriptions
+
+                .Include(p => p.PrescribedTests)
+                .Include(p => p.PrescriptionItems)
+
+                .FirstOrDefaultAsync(
+                    p =>
+                    p.PrescriptionId ==
+                    prescription.PrescriptionId);
+
+
+            if (existingPrescription == null)
+                return NotFound();
+
+            if (User.IsInRole("Doctor"))
+            {
+                var doctor =
+                    await GetCurrentDoctorAsync();
+
+                if (doctor == null)
+                    return Forbid();
+
+
+                if (existingPrescription.DoctorId
+                    != doctor.DoctorId)
+                {
+                    return Forbid();
+                }
+
+
+                prescription.DoctorId =
+                    existingPrescription.DoctorId;
+
+                prescription.PatientId =
+                    existingPrescription.PatientId;
+            }
+
+
+            patientDropDown(prescription.PatientId);
+            DoctorDropDown(prescription.DoctorId);
+
+            if (treatmentOperation.Equals(
+                "add",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                prescription.PrescriptionItems ??=
+                    new List<PrescriptionItem>();
+
+                prescription.PrescriptionItems.Add(
+                    new PrescriptionItem());
+
+                ModelState.Clear();
+
+                return View(prescription);
+            }
+
+            if (treatmentOperation.StartsWith(
+                "delete-",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                if (int.TryParse(
+                    treatmentOperation.Replace(
+                        "delete-", ""),
+                    out int index))
+                {
+                    if (prescription.PrescriptionItems != null &&
+                        index >= 0 &&
+                        index < prescription.PrescriptionItems.Count)
+                    {
+                        prescription.PrescriptionItems.RemoveAt(index);
+                    }
+                }
+
+                ModelState.Clear();
+
+                return View(prescription);
+            }
+
+            if (testOperation.Equals(
+                "add",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                prescription.PrescribedTests ??=
+                    new List<PrescribedTest>();
+
+                prescription.PrescribedTests.Add(
+                    new PrescribedTest());
+
+                ModelState.Clear();
+
+                return View(prescription);
+            }
+
+
+            if (testOperation.StartsWith(
+                "delete-",
+                StringComparison.OrdinalIgnoreCase))
+            {
+                if (int.TryParse(
+                    testOperation.Replace(
+                        "delete-", ""),
+                    out int index))
+                {
+                    if (prescription.PrescribedTests != null &&
+                        index >= 0 &&
+                        index < prescription.PrescribedTests.Count)
+                    {
+                        prescription.PrescribedTests.RemoveAt(index);
+                    }
+                }
+
+                ModelState.Clear();
+
+                return View(prescription);
+            }
 
             if (ModelState.IsValid)
             {
                 try
                 {
-
-
                     existingPrescription.VisitDate =
                         prescription.VisitDate;
 
@@ -412,7 +443,6 @@ namespace DigitalPrescriptionProject.Controllers
                     }
                     else
                     {
-
                         existingPrescription.DoctorId =
                             prescription.DoctorId;
 
@@ -423,8 +453,11 @@ namespace DigitalPrescriptionProject.Controllers
                     var postedTestIds =
                         (prescription.PrescribedTests ??
                          new List<PrescribedTest>())
+
                         .Where(t => t.Id > 0)
+
                         .Select(t => t.Id)
+
                         .ToHashSet();
 
 
@@ -435,35 +468,45 @@ namespace DigitalPrescriptionProject.Controllers
 
                     var testsToDelete =
                         existingTests
-                        .Where(t => !postedTestIds.Contains(t.Id))
+                        .Where(t =>
+                            !postedTestIds.Contains(t.Id))
                         .ToList();
 
-                    _context.PrescribedTests.RemoveRange(
-                        testsToDelete);
 
+                    _context.PrescribedTests
+                        .RemoveRange(testsToDelete);
 
-                    foreach (var postedTest in
-                             prescription.PrescribedTests ??
-                             new List<PrescribedTest>())
+                    foreach (
+                        var postedTest
+                        in prescription.PrescribedTests
+                        ?? new List<PrescribedTest>())
                     {
+
                         if (postedTest.Id == 0)
                         {
                             existingPrescription.PrescribedTests
-                                .Add(new PrescribedTest
-                                {
-                                    TestName = postedTest.TestName,
-                                    Instruction = postedTest.Instruction
-                                });
+                                .Add(
+                                    new PrescribedTest
+                                    {
+                                        TestName =
+                                            postedTest.TestName,
+
+                                        Instruction =
+                                            postedTest.Instruction
+                                    });
                         }
                         else
                         {
-
                             var existingTest =
                                 existingTests.FirstOrDefault(
-                                    t => t.Id == postedTest.Id);
+                                    t =>
+                                    t.Id ==
+                                    postedTest.Id);
+
 
                             if (existingTest == null)
                                 return Forbid();
+
 
                             existingTest.TestName =
                                 postedTest.TestName;
@@ -473,16 +516,23 @@ namespace DigitalPrescriptionProject.Controllers
                         }
                     }
 
+
                     var postedItemIds =
                         (prescription.PrescriptionItems ??
                          new List<PrescriptionItem>())
-                        .Where(i => i.PrescriptionItemId > 0)
-                        .Select(i => i.PrescriptionItemId)
+
+                        .Where(i =>
+                            i.PrescriptionItemId > 0)
+
+                        .Select(i =>
+                            i.PrescriptionItemId)
+
                         .ToHashSet();
 
 
                     var existingItems =
-                        existingPrescription.PrescriptionItems
+                        existingPrescription
+                        .PrescriptionItems
                         ?? new List<PrescriptionItem>();
 
                     var itemsToDelete =
@@ -492,44 +542,48 @@ namespace DigitalPrescriptionProject.Controllers
                                 i.PrescriptionItemId))
                         .ToList();
 
-                    _context.PrescriptionItems.RemoveRange(
-                        itemsToDelete);
 
-                    foreach (var postedItem in
-                             prescription.PrescriptionItems ??
-                             new List<PrescriptionItem>())
+                    _context.PrescriptionItems
+                        .RemoveRange(itemsToDelete);
+
+
+                    foreach (
+                        var postedItem
+                        in prescription.PrescriptionItems
+                        ?? new List<PrescriptionItem>())
                     {
+
                         if (postedItem.PrescriptionItemId == 0)
                         {
+                            existingPrescription.PrescriptionItems
+                                .Add(
+                                    new PrescriptionItem
+                                    {
+                                        MedicineName =
+                                            postedItem.MedicineName,
 
-                            existingPrescription
-                                .PrescriptionItems
-                                .Add(new PrescriptionItem
-                                {
-                                    MedicineName =
-                                        postedItem.MedicineName,
+                                        Dosage =
+                                            postedItem.Dosage,
 
-                                    Dosage =
-                                        postedItem.Dosage,
+                                        Duration =
+                                            postedItem.Duration,
 
-                                    Duration =
-                                        postedItem.Duration,
-
-                                    Time =
-                                        postedItem.Time
-                                });
+                                        Time =
+                                            postedItem.Time
+                                    });
                         }
                         else
                         {
-
                             var existingItem =
                                 existingItems.FirstOrDefault(
                                     i =>
                                     i.PrescriptionItemId ==
                                     postedItem.PrescriptionItemId);
 
+
                             if (existingItem == null)
                                 return Forbid();
+
 
                             existingItem.MedicineName =
                                 postedItem.MedicineName;
@@ -562,8 +616,11 @@ namespace DigitalPrescriptionProject.Controllers
                 }
             }
 
+
             return View(prescription);
         }
+
+
 
 
         [Authorize(Roles = "Admin")]
@@ -572,52 +629,69 @@ namespace DigitalPrescriptionProject.Controllers
             if (id == null)
                 return NotFound();
 
-            var prescription = await _context.Prescriptions
+
+            var prescription =
+                await _context.Prescriptions
+
                 .Include(p => p.Doctor)
                 .Include(p => p.Patient)
+                .Include(p => p.PrescribedTests)
+                .Include(p => p.PrescriptionItems)
+
                 .FirstOrDefaultAsync(
-                    p => p.PrescriptionId == id);
+                    p =>
+                    p.PrescriptionId == id);
+
 
             if (prescription == null)
                 return NotFound();
+
 
             return View(prescription);
         }
 
 
 
+
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Admin")]
-        public async Task<IActionResult> DeleteConfirmed(int? id)
+        public async Task<IActionResult> DeleteConfirmed(
+            int? id)
         {
             if (id == null)
                 return NotFound();
 
+
             var prescription =
                 await _context.Prescriptions
-                    .FindAsync(id);
+                .FindAsync(id);
+
 
             if (prescription != null)
             {
-                _context.Prescriptions.Remove(
-                    prescription);
+                _context.Prescriptions
+                    .Remove(prescription);
 
                 await _context.SaveChangesAsync();
             }
+
 
             return RedirectToAction(nameof(Index));
         }
 
 
 
-        private async Task<Doctor?> GetCurrentDoctorAsync()
+
+        private async Task<Doctor?>
+            GetCurrentDoctorAsync()
         {
             var user =
                 await _userManager.GetUserAsync(User);
 
             if (user == null)
                 return null;
+
 
             return await _context.Doctors
                 .FirstOrDefaultAsync(
@@ -625,7 +699,9 @@ namespace DigitalPrescriptionProject.Controllers
         }
 
 
-        private async Task<Patient?> GetCurrentPatientAsync()
+
+        private async Task<Patient?>
+            GetCurrentPatientAsync()
         {
             var user =
                 await _userManager.GetUserAsync(User);
@@ -633,13 +709,16 @@ namespace DigitalPrescriptionProject.Controllers
             if (user == null)
                 return null;
 
+
             return await _context.Patients
                 .FirstOrDefaultAsync(
                     p => p.UserId == user.Id);
         }
 
 
-        private void patientDropDown(object? select = null)
+
+        private void patientDropDown(
+            object? select = null)
         {
             ViewBag.PatientId =
                 new SelectList(
@@ -650,7 +729,9 @@ namespace DigitalPrescriptionProject.Controllers
         }
 
 
-        private void DoctorDropDown(object? select = null)
+
+        private void DoctorDropDown(
+            object? select = null)
         {
             ViewBag.DoctorId =
                 new SelectList(
@@ -660,10 +741,13 @@ namespace DigitalPrescriptionProject.Controllers
                     select);
         }
 
+
+
         private bool PrescriptionExists(int? id)
         {
             return _context.Prescriptions
-                .Any(e => e.PrescriptionId == id);
+                .Any(e =>
+                    e.PrescriptionId == id);
         }
     }
 }

@@ -45,8 +45,7 @@ public class UserManagementController : Controller
         string[] allowedRoles =
 {
     "Doctor",
-    "Patient",
-    "Receptionist"
+    "Patient"
 };
 
         if (!allowedRoles.Contains(model.Role))

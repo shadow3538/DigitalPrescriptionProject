@@ -1,10 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using DigitalPrescriptionProject.Models;
 using DigitalPrescriptionProject.Data;
-using Microsoft.AspNetCore.Identity;
+using DigitalPrescriptionProject.Models;
 using DigitalPrescriptionProject.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 [Authorize(Roles = "Admin,Patient")]
 public class PatientController : Controller
@@ -20,8 +20,10 @@ public class PatientController : Controller
         _userManager = userManager;
     }
 
-    // GET: PATIENTS
-    public async Task<IActionResult> Index(int page = 1, int pageSize = 10)
+
+    public async Task<IActionResult> Index(
+        int page = 1,
+        int pageSize = 10)
     {
         if (page < 1)
             page = 1;
@@ -51,43 +53,44 @@ public class PatientController : Controller
 
         ViewBag.CurrentPage = page;
         ViewBag.PageSize = pageSize;
-        ViewBag.TotalPages = (int)Math.Ceiling(
-            (double)totalPatients / pageSize
-        );
+        ViewBag.TotalPages =
+            (int)Math.Ceiling(
+                (double)totalPatients / pageSize);
 
         return View(patients);
     }
+    
 
 
-    // GET: PATIENTS/Details/5
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
         var patient = await _context.Patients
-            .FirstOrDefaultAsync(p => p.PatientId == id);
+            .FirstOrDefaultAsync(
+                p => p.PatientId == id);
 
         if (patient == null)
-        {
             return NotFound();
-        }
 
         if (User.IsInRole("Patient"))
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null || patient.UserId != user.Id)
+            if (user == null ||
+                patient.UserId != user.Id)
+            {
                 return Forbid();
+            }
         }
 
         return View(patient);
     }
 
 
-    // GET: PATIENTS/Create
+
+
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
@@ -95,7 +98,8 @@ public class PatientController : Controller
     }
 
 
-    // POST: PATIENTS/Create
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
@@ -104,39 +108,46 @@ public class PatientController : Controller
         [FromServices] IWebHostEnvironment env)
     {
         if (!ModelState.IsValid)
-        {
             return View(model);
-        }
+
 
         var user = new ApplicationUser
         {
             UserName = model.Email,
             Email = model.Email,
-            EmailConfirmed = true
+
+            EmailConfirmed = true,
+
+            MustChangePassword = true,
+
+            PhoneNumber = model.Phone
         };
 
-        var userResult = await _userManager.CreateAsync(
-            user,
-            model.Password
-        );
+
+        var userResult =
+            await _userManager.CreateAsync(
+                user,
+                model.Password);
+
 
         if (!userResult.Succeeded)
         {
             foreach (var error in userResult.Errors)
             {
                 ModelState.AddModelError(
-                    "",
-                    error.Description
-                );
+                    string.Empty,
+                    error.Description);
             }
 
             return View(model);
         }
 
-        var roleResult = await _userManager.AddToRoleAsync(
-            user,
-            "Patient"
-        );
+
+        var roleResult =
+            await _userManager.AddToRoleAsync(
+                user,
+                "Patient");
+
 
         if (!roleResult.Succeeded)
         {
@@ -145,9 +156,8 @@ public class PatientController : Controller
             foreach (var error in roleResult.Errors)
             {
                 ModelState.AddModelError(
-                    "",
-                    error.Description
-                );
+                    string.Empty,
+                    error.Description);
             }
 
             return View(model);
@@ -158,74 +168,109 @@ public class PatientController : Controller
             FirstName = model.FirstName,
             LastName = model.LastName,
             Age = model.Age,
+            Gender = model.Gender,
             Phone = model.Phone,
             Email = model.Email,
-            Gender = model.Gender,
+
             UserId = user.Id,
+
             CreatedAt = DateTime.Now
         };
 
+
         patient.Upload = model.Upload;
-        patient.SavePatientImage(env);
+
+        try
+        {
+            patient.SavePatientImage(env);
+        }
+        catch (Exception ex)
+        {
+           
+            await _userManager.DeleteAsync(user);
+
+            ModelState.AddModelError(
+                string.Empty,
+                ex.Message);
+
+            return View(model);
+        }
 
         _context.Patients.Add(patient);
 
-        await _context.SaveChangesAsync();
+        try
+        {
+            await _context.SaveChangesAsync();
+        }
+        catch
+        {
+            await _userManager.DeleteAsync(user);
+
+            throw;
+        }
+
 
         return RedirectToAction(nameof(Index));
     }
 
 
-    // GET: PATIENTS/Edit/5
+
     [Authorize(Roles = "Admin,Patient")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
         var patient = await _context.Patients
-            .FirstOrDefaultAsync(p => p.PatientId == id);
+            .FirstOrDefaultAsync(
+                p => p.PatientId == id);
 
         if (patient == null)
-        {
             return NotFound();
-        }
 
         if (User.IsInRole("Patient"))
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null || patient.UserId != user.Id)
+            if (user == null ||
+                patient.UserId != user.Id)
+            {
                 return Forbid();
+            }
         }
+
 
         return View(patient);
     }
 
 
-    // POST: PATIENTS/Edit/5
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,Patient")]
     public async Task<IActionResult> Edit(
-    int? id,
-    Patient patient,
-    [FromServices] IWebHostEnvironment env)
+        int? id,
+        Patient patient,
+        [FromServices] IWebHostEnvironment env)
     {
         if (id != patient.PatientId)
             return NotFound();
 
-        var existingPatient = await _context.Patients
-            .FirstOrDefaultAsync(p => p.PatientId == patient.PatientId);
+
+        var existingPatient =
+            await _context.Patients
+                .FirstOrDefaultAsync(
+                    p => p.PatientId ==
+                         patient.PatientId);
+
 
         if (existingPatient == null)
             return NotFound();
 
+
         if (User.IsInRole("Patient"))
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user =
+                await _userManager.GetUserAsync(User);
 
             if (user == null ||
                 existingPatient.UserId != user.Id)
@@ -234,24 +279,37 @@ public class PatientController : Controller
             }
         }
 
+
         if (!ModelState.IsValid)
             return View(patient);
 
+
         try
         {
+            existingPatient.FirstName =
+                patient.FirstName;
 
-            existingPatient.FirstName = patient.FirstName;
-            existingPatient.LastName = patient.LastName;
-            existingPatient.Age = patient.Age;
-            existingPatient.Phone = patient.Phone;
-            existingPatient.Gender = patient.Gender;
+            existingPatient.LastName =
+                patient.LastName;
+
+            existingPatient.Age =
+                patient.Age;
+
+            existingPatient.Phone =
+                patient.Phone;
+
+            existingPatient.Gender =
+                patient.Gender;
 
 
             if (patient.Upload != null)
             {
-                existingPatient.Upload = patient.Upload;
+                existingPatient.Upload =
+                    patient.Upload;
+
                 existingPatient.SavePatientImage(env);
             }
+
 
             await _context.SaveChangesAsync();
         }
@@ -263,45 +321,51 @@ public class PatientController : Controller
             throw;
         }
 
+
         return RedirectToAction(nameof(Index));
     }
 
 
-    // GET: PATIENTS/Delete/5
+
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
-        var patient = await _context.Patients
-            .FirstOrDefaultAsync(p => p.PatientId == id);
+
+        var patient =
+            await _context.Patients
+                .FirstOrDefaultAsync(
+                    p => p.PatientId == id);
+
 
         if (patient == null)
-        {
             return NotFound();
-        }
+
 
         return View(patient);
     }
 
 
-    // POST: PATIENTS/Delete/5
-    [HttpPost, ActionName("Delete")]
+    [HttpPost]
+    [ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteConfirmed(int? id)
+    public async Task<IActionResult> DeleteConfirmed(
+        int? id)
     {
-        var patient = await _context.Patients.FindAsync(id);
+        var patient =
+            await _context.Patients.FindAsync(id);
+
 
         if (patient != null)
         {
             _context.Patients.Remove(patient);
+
+            await _context.SaveChangesAsync();
         }
 
-        await _context.SaveChangesAsync();
 
         return RedirectToAction(nameof(Index));
     }
@@ -310,6 +374,6 @@ public class PatientController : Controller
     private bool PatientExists(int? id)
     {
         return _context.Patients
-            .Any(e => e.PatientId == id);
+            .Any(p => p.PatientId == id);
     }
 }

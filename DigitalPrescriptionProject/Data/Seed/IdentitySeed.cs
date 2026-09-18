@@ -8,7 +8,7 @@ namespace DigitalPrescriptionProject.Data.Seed
         {
             string[] roles =
             {
-                "Admin", "Doctor","Patient", "Receptionist"
+                "Admin", "Doctor","Patient"
             };
 
             foreach (var role in roles)

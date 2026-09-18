@@ -1,4 +1,3 @@
-
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using DigitalPrescriptionProject.Models;
@@ -7,7 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using DigitalPrescriptionProject.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
-[Authorize(Roles = ("Admin,Doctor"))]
+[Authorize(Roles = "Admin,Doctor")]
 public class DoctorController : Controller
 {
     private readonly ApplicationDbContext _context;
@@ -92,12 +91,14 @@ public async Task<IActionResult> Create(
         
         var temporaryPassword = GenerateTemporaryPassword();
 
- 
+
         var user = new ApplicationUser
         {
             UserName = model.Email,
             Email = model.Email,
-            EmailConfirmed = true
+            EmailConfirmed = true,
+            MustChangePassword = true,
+            PhoneNumber = model.Phone
         };
 
         var userResult = await _userManager.CreateAsync(

@@ -7,39 +7,60 @@
 <div class="container-fluid py-3">
 
     <div class="d-flex justify-content-between align-items-center mb-3">
-        <h2 class="mb-0">Edit Prescription</h2>
+
+        <h2 class="mb-0">
+            Edit Prescription
+        </h2>
+
     </div>
 
-    <form asp-action="Edit" method="post">
+
+    <form asp-action="Edit"
+          method="post">
+
+        @Html.AntiForgeryToken()
+
+        <input type="hidden"
+               asp-for="PrescriptionId" />
 
 
-        <input type="hidden" asp-for="PrescriptionId" />
+        <div asp-validation-summary="All"
+             class="text-danger mb-3">
+        </div>
 
-        <div asp-validation-summary="All" class="text-danger mb-3"></div>
 
-      
         <div class="card mb-4">
 
             <div class="card-header">
-                <h5 class="mb-0">Prescription Information</h5>
+
+                <h5 class="mb-0">
+                    Prescription Information
+                </h5>
+
             </div>
+
 
             <div class="card-body">
 
                 <div class="row">
 
-           
+
                     <div class="col-md-6 mb-3">
-                        <label asp-for="VisitDate" class="form-label"></label>
+
+                        <label asp-for="VisitDate"
+                               class="form-label">
+                        </label>
 
                         <input asp-for="VisitDate"
                                class="form-control" />
 
                         <span asp-validation-for="VisitDate"
-                              class="text-danger"></span>
+                              class="text-danger">
+                        </span>
+
                     </div>
 
-        
+
                     <div class="col-md-6 mb-3">
 
                         <label asp-for="PatientId"
@@ -58,9 +79,11 @@
                         </select>
 
                         <span asp-validation-for="PatientId"
-                              class="text-danger"></span>
+                              class="text-danger">
+                        </span>
 
                     </div>
+
 
                     <div class="col-md-6 mb-3">
 
@@ -80,11 +103,12 @@
                         </select>
 
                         <span asp-validation-for="DoctorId"
-                              class="text-danger"></span>
+                              class="text-danger">
+                        </span>
 
                     </div>
 
-  
+
                     <div class="col-md-6 mb-3">
 
                         <label asp-for="Diagnosis"
@@ -95,7 +119,8 @@
                                class="form-control" />
 
                         <span asp-validation-for="Diagnosis"
-                              class="text-danger"></span>
+                              class="text-danger">
+                        </span>
 
                     </div>
 
@@ -111,7 +136,8 @@
                                   rows="3"></textarea>
 
                         <span asp-validation-for="ClinicalNotes"
-                              class="text-danger"></span>
+                              class="text-danger">
+                        </span>
 
                     </div>
 
@@ -124,14 +150,17 @@
 
         <div class="row g-4">
 
+
             <div class="col-12 col-lg-6">
 
                 <div class="card h-100">
 
                     <div class="card-header">
+
                         <h5 class="mb-0">
-                            Prescripted Tests
+                            Prescribed Tests
                         </h5>
+
                     </div>
 
                     <div class="card-body">
@@ -151,9 +180,11 @@
                 <div class="card h-100">
 
                     <div class="card-header">
+
                         <h5 class="mb-0">
                             Medicines
                         </h5>
+
                     </div>
 
                     <div class="card-body">
@@ -169,16 +200,22 @@
 
         </div>
 
+
         <div class="mt-4 mb-3">
 
             <button type="submit"
                     class="btn btn-outline-primary">
+
                 Save Prescription
+
             </button>
+
 
             <a asp-action="Index"
                class="btn btn-outline-secondary ms-2">
+
                 Back to List
+
             </a>
 
         </div>

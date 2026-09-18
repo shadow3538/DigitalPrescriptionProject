@@ -12,14 +12,15 @@ namespace DigitalPrescriptionProject.Models
         [DisplayName("Medicine Name")]
         public string MedicineName { get; set; } = default!;
 
-        public string Dosage { get; set; }= default!;
+        public string Dosage { get; set; } = default!;
 
         public string Duration { get; set; } = default!;
+
         public string Time { get; set; } = "";
 
         [ForeignKey("Prescription")]
         public int PrescriptionId { get; set; }
+
         public Prescription? Prescription { get; set; }
     }
-
 }

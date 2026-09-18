@@ -1,40 +1,63 @@
-﻿@model Prescription
+﻿@model DigitalPrescriptionProject.Models.Prescription
 
 <div class="table-responsive">
 
     <table class="table table-bordered table-sm align-middle">
 
         <thead>
+
             <tr>
+
                 <th style="width: 90px;">
+
                     <button type="submit"
                             name="testOperation"
                             value="add"
                             class="btn btn-outline-primary btn-sm">
+
                         + Add
+
                     </button>
+
                 </th>
 
-                <th>Test Name</th>
+                <th>
+                    Test Name
+                </th>
 
-                <th>Instruction</th>
+                <th>
+                    Instruction
+                </th>
+
             </tr>
+
         </thead>
+
 
         <tbody>
 
-            @for (int i = 0; i < Model.PrescribedTests.Count; i++)
+            @for (
+                int i = 0;
+                i < Model.PrescribedTests.Count;
+                i++)
             {
                 <tr>
 
+                    <!-- Delete -->
+
                     <td>
+
                         <button type="submit"
                                 name="testOperation"
                                 value="delete-@i"
                                 class="btn btn-outline-danger btn-sm">
+
                             Delete
+
                         </button>
+
                     </td>
+
 
                     <td>
 
@@ -56,6 +79,7 @@
                         </span>
 
                     </td>
+
 
                     <td>
 

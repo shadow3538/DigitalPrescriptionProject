@@ -27,7 +27,7 @@
             <option value="">-- Select Role --</option>
             <option value="Doctor">Doctor</option>
             <option value="Patient">Patient</option>
-            <option value="Receptionist">Receptionist</option>
+            
 
         </select>
 
@@ -36,8 +36,6 @@
         </span>
     </div>
 
-
-    <!-- Common Information -->
 
     <div class="mb-3">
         <label asp-for="FirstName" class="form-label">
@@ -95,8 +93,6 @@
     </div>
 
 
-    <!-- Doctor / Patient Common Fields -->
-
     <div id="ageSection" class="mb-3" style="display:none;">
 
         <label asp-for="Age" class="form-label">
@@ -130,7 +126,6 @@
     </div>
 
 
-    <!-- Doctor Only -->
 
     <div id="doctorSection" style="display:none;">
 
@@ -166,7 +161,6 @@
     </div>
 
 
-    <!-- Patient Only -->
 
     <div id="patientSection" style="display:none;">
 
@@ -202,7 +196,6 @@
     </div>
 
 
-    <!-- Image -->
 
     <div id="uploadSection"
          class="mb-3"
@@ -261,8 +254,6 @@
 
             const selectedRole = role.value;
 
-
-            // সব section আগে hide
             doctorSection.style.display = "none";
             patientSection.style.display = "none";
             ageSection.style.display = "none";
@@ -270,7 +261,6 @@
             uploadSection.style.display = "none";
 
 
-            // Doctor
             if (selectedRole === "Doctor") {
 
                 doctorSection.style.display = "block";
@@ -279,8 +269,6 @@
                 uploadSection.style.display = "block";
             }
 
-
-            // Patient
             else if (selectedRole === "Patient") {
 
                 patientSection.style.display = "block";
@@ -289,18 +277,11 @@
                 uploadSection.style.display = "block";
             }
 
-
-            // Receptionist
-            else if (selectedRole === "Receptionist") {
-
-                phoneSection.style.display = "block";
-            }
         }
 
 
         role.addEventListener("change", updateFields);
 
-        // Page load হলে initial state
         updateFields();
 
     </script>
