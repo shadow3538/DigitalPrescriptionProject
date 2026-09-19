@@ -45,6 +45,10 @@ namespace DigitalPrescriptionProject.Models
         [DisplayFormat(ApplyFormatInEditMode =true, DataFormatString ="{0:yyyy-MM-dd}")]
         public DateTime CreatedAt { get; set; } = DateTime.Today;
 
+        public bool IsDeleted { get; set; } = false;
+
+        public DateTime? DeletedAt { get; set; }
+
         public List<Prescription> Prescriptions { get; set; } = new();
 
         public void SavePatientImage(IWebHostEnvironment env)

@@ -112,12 +112,16 @@ namespace DigitalPrescriptionProject.Controllers
         }
 
 
- 
+
         [Authorize(Roles = "Doctor,Admin")]
         public IActionResult Create()
         {
             patientDropDown();
-            DoctorDropDown();
+
+            if (User.IsInRole("Admin"))
+            {
+                DoctorDropDown();
+            }
 
             return View(new Prescription());
         }
@@ -129,11 +133,11 @@ namespace DigitalPrescriptionProject.Controllers
         [ValidateAntiForgeryToken]
         [Authorize(Roles = "Doctor,Admin")]
         public async Task<IActionResult> Create(
-            Prescription prescription,
-            string treatmentOperation = "save",
-            string testOperation = "save")
+     Prescription prescription,
+     [FromServices] IWebHostEnvironment env,
+     string treatmentOperation = "save",
+     string testOperation = "save")
         {
-
 
             if (User.IsInRole("Doctor"))
             {
@@ -142,12 +146,16 @@ namespace DigitalPrescriptionProject.Controllers
                 if (doctor == null)
                     return Forbid();
 
-                prescription.DoctorId =
-                    doctor.DoctorId;
+                
+                prescription.DoctorId = doctor.DoctorId;
             }
 
             patientDropDown(prescription.PatientId);
-            DoctorDropDown(prescription.DoctorId);
+
+            if (User.IsInRole("Admin"))
+            {
+                DoctorDropDown(prescription.DoctorId);
+            }
 
 
             if (treatmentOperation.Equals(
@@ -171,8 +179,7 @@ namespace DigitalPrescriptionProject.Controllers
                 StringComparison.OrdinalIgnoreCase))
             {
                 if (int.TryParse(
-                    treatmentOperation.Replace(
-                        "delete-", ""),
+                    treatmentOperation.Replace("delete-", ""),
                     out int index))
                 {
                     if (prescription.PrescriptionItems != null &&
@@ -204,13 +211,13 @@ namespace DigitalPrescriptionProject.Controllers
                 return View(prescription);
             }
 
+
             if (testOperation.StartsWith(
                 "delete-",
                 StringComparison.OrdinalIgnoreCase))
             {
                 if (int.TryParse(
-                    testOperation.Replace(
-                        "delete-", ""),
+                    testOperation.Replace("delete-", ""),
                     out int index))
                 {
                     if (prescription.PrescribedTests != null &&
@@ -229,14 +236,12 @@ namespace DigitalPrescriptionProject.Controllers
 
             if (ModelState.IsValid)
             {
-                _context.Prescriptions.Add(
-                    prescription);
+                _context.Prescriptions.Add(prescription);
 
                 await _context.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Index));
             }
-
 
             return View(prescription);
         }

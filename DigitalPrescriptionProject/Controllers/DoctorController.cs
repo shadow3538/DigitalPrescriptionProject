@@ -10,18 +10,22 @@ using Microsoft.AspNetCore.Authorization;
 public class DoctorController : Controller
 {
     private readonly ApplicationDbContext _context;
-
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public DoctorController(ApplicationDbContext context, UserManager<ApplicationUser> usermanager)
+    public DoctorController(
+        ApplicationDbContext context,
+        UserManager<ApplicationUser> userManager)
     {
         _context = context;
-        _userManager = usermanager;
+        _userManager = userManager;
     }
 
-    // GET: DOCTORS
+
+
+
     public async Task<IActionResult> Index()
     {
+
         if (User.IsInRole("Doctor"))
         {
             var user = await _userManager.GetUserAsync(User);
@@ -30,66 +34,84 @@ public class DoctorController : Controller
                 return Forbid();
 
             var doctors = await _context.Doctors
-                .Where(d => d.UserId == user.Id)
+                .Where(d =>
+                    d.UserId == user.Id &&
+                    !d.IsDeleted)
                 .ToListAsync();
 
             return View(doctors);
         }
 
-        
-        return View(await _context.Doctors.ToListAsync());
+
+        var allDoctors = await _context.Doctors
+            .Where(d => !d.IsDeleted)
+            .ToListAsync();
+
+        return View(allDoctors);
     }
 
-    // GET: DOCTORS/Details/5
+
+
+
     public async Task<IActionResult> Details(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
+
 
         var doctor = await _context.Doctors
-            .FirstOrDefaultAsync(m => m.DoctorId == id);
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == id &&
+                !d.IsDeleted);
+
+
         if (doctor == null)
-        {
             return NotFound();
-        }
+
+
+
         if (User.IsInRole("Doctor"))
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null || doctor.UserId != user.Id)
+            if (user == null ||
+                doctor.UserId != user.Id)
+            {
                 return Forbid();
+            }
         }
+
 
         return View(doctor);
     }
 
-    // GET: DOCTORS/Create
+
+
+
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
         return View(new CreateDoctorViewModel());
     }
 
-    // POST: DOCTORS/Create
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 
-[HttpPost]
-[ValidateAntiForgeryToken]
-[Authorize(Roles = "Admin")]
-public async Task<IActionResult> Create(
-    CreateDoctorViewModel model,
-    [FromServices] IWebHostEnvironment env)
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Create(
+        CreateDoctorViewModel model,
+        [FromServices] IWebHostEnvironment env)
     {
         if (!ModelState.IsValid)
         {
             return View(model);
         }
 
-        
-        var temporaryPassword = GenerateTemporaryPassword();
+
+        var temporaryPassword =
+            GenerateTemporaryPassword();
 
 
         var user = new ApplicationUser
@@ -98,13 +120,15 @@ public async Task<IActionResult> Create(
             Email = model.Email,
             EmailConfirmed = true,
             MustChangePassword = true,
-            PhoneNumber = model.Phone
+            PhoneNumber = model.Phone,
+            IsActive = true
         };
+
 
         var userResult = await _userManager.CreateAsync(
             user,
-            temporaryPassword
-        );
+            temporaryPassword);
+
 
         if (!userResult.Succeeded)
         {
@@ -112,35 +136,32 @@ public async Task<IActionResult> Create(
             {
                 ModelState.AddModelError(
                     "",
-                    error.Description
-                );
+                    error.Description);
             }
 
             return View(model);
         }
 
-  
 
         var roleResult = await _userManager.AddToRoleAsync(
             user,
-            "Doctor"
-        );
+            "Doctor");
+
 
         if (!roleResult.Succeeded)
         {
-
             await _userManager.DeleteAsync(user);
 
             foreach (var error in roleResult.Errors)
             {
                 ModelState.AddModelError(
                     "",
-                    error.Description
-                );
+                    error.Description);
             }
 
             return View(model);
         }
+
 
         var doctor = new Doctor
         {
@@ -151,21 +172,26 @@ public async Task<IActionResult> Create(
             Phone = model.Phone,
             Email = model.Email,
 
+            UserId = user.Id,
 
-            UserId = user.Id
+            IsDeleted = false,
+            DeletedAt = null
         };
+
 
         if (model.Upload is not null)
         {
             var fileName =
                 $"/Images/DoctorsImage_{Guid.NewGuid()}_{model.Upload.FileName}";
 
+
             using Stream stream =
                 System.IO.File.Create(
-                    env.WebRootPath + fileName
-                );
+                    env.WebRootPath + fileName);
+
 
             await model.Upload.CopyToAsync(stream);
+
 
             doctor.ImagePath = fileName;
         }
@@ -177,10 +203,15 @@ public async Task<IActionResult> Create(
 
 
         TempData["DoctorEmail"] = model.Email;
-        TempData["TemporaryPassword"] = temporaryPassword;
+        TempData["TemporaryPassword"] =
+            temporaryPassword;
+
 
         return RedirectToAction(nameof(Index));
     }
+
+
+
 
     private string GenerateTemporaryPassword()
     {
@@ -189,50 +220,64 @@ public async Task<IActionResult> Create(
 
 
 
-    // GET: DOCTORS/Edit/5
 
-    [Authorize(Roles = "Admin, Doctor")]
+    [Authorize(Roles = "Admin,Doctor")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
 
-        var doctor = await _context.Doctors.FindAsync(id);
+
+        var doctor = await _context.Doctors
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == id &&
+                !d.IsDeleted);
+
+
         if (doctor == null)
-        {
             return NotFound();
-        }
+
+
         if (User.IsInRole("Doctor"))
         {
             var user = await _userManager.GetUserAsync(User);
 
-            if (user == null || doctor.UserId != user.Id)
+            if (user == null ||
+                doctor.UserId != user.Id)
+            {
                 return Forbid();
+            }
         }
+
+
         return View(doctor);
     }
 
-    // POST: DOCTORS/Edit/5
-    // To protect from overposting attacks, enable the specific properties you want to bind to.
-    // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+
+
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,Doctor")]
     public async Task<IActionResult> Edit(
-     int? doctorid,
-     Doctor doctor,
-     [FromServices] IWebHostEnvironment env)
+        int? doctorid,
+        Doctor doctor,
+        [FromServices] IWebHostEnvironment env)
     {
         if (doctorid != doctor.DoctorId)
             return NotFound();
 
+
         var existingDoctor = await _context.Doctors
-            .FirstOrDefaultAsync(d => d.DoctorId == doctor.DoctorId);
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == doctor.DoctorId &&
+                !d.IsDeleted);
+
 
         if (existingDoctor == null)
             return NotFound();
+
 
         if (User.IsInRole("Doctor"))
         {
@@ -245,23 +290,37 @@ public async Task<IActionResult> Create(
             }
         }
 
+
         if (!ModelState.IsValid)
             return View(doctor);
 
+
         try
         {
-            existingDoctor.FirstName = doctor.FirstName;
-            existingDoctor.LastName = doctor.LastName;
-            existingDoctor.Speciality = doctor.Speciality;
-            existingDoctor.Age = doctor.Age;
-            existingDoctor.Phone = doctor.Phone;
+            existingDoctor.FirstName =
+                doctor.FirstName;
+
+            existingDoctor.LastName =
+                doctor.LastName;
+
+            existingDoctor.Speciality =
+                doctor.Speciality;
+
+            existingDoctor.Age =
+                doctor.Age;
+
+            existingDoctor.Phone =
+                doctor.Phone;
 
 
             if (doctor.Upload != null)
             {
-                existingDoctor.Upload = doctor.Upload;
+                existingDoctor.Upload =
+                    doctor.Upload;
+
                 existingDoctor.SaveDoctorImage(env);
             }
+
 
             await _context.SaveChangesAsync();
         }
@@ -273,46 +332,186 @@ public async Task<IActionResult> Create(
             throw;
         }
 
+
         return RedirectToAction(nameof(Index));
     }
 
-    // GET: DOCTORS/Delete/5
+
+
+
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
     {
         if (id == null)
-        {
             return NotFound();
-        }
+
 
         var doctor = await _context.Doctors
-            .FirstOrDefaultAsync(m => m.DoctorId == id);
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == id &&
+                !d.IsDeleted);
+
+
         if (doctor == null)
-        {
             return NotFound();
-        }
+
 
         return View(doctor);
     }
 
-    // POST: DOCTORS/Delete/5
+
+
+
+
     [HttpPost, ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> DeleteConfirmed(int? id)
     {
-        var doctor = await _context.Doctors.FindAsync(id);
-        if (doctor != null)
+        if (id == null)
+            return NotFound();
+
+
+        var doctor = await _context.Doctors
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == id &&
+                !d.IsDeleted);
+
+
+        if (doctor == null)
+            return NotFound();
+
+
+        var hasPrescription =
+            await _context.Prescriptions
+                .AnyAsync(p =>
+                    p.DoctorId == doctor.DoctorId);
+
+
+        if (hasPrescription)
         {
+            doctor.IsDeleted = true;
+            doctor.DeletedAt = DateTime.Now;
+
+
+            if (!string.IsNullOrEmpty(doctor.UserId))
+            {
+                var user =
+                    await _userManager.FindByIdAsync(
+                        doctor.UserId);
+
+                if (user != null)
+                {
+                    user.IsActive = false;
+                }
+            }
+        }
+        else
+        {
+
             _context.Doctors.Remove(doctor);
+
+
+            if (!string.IsNullOrEmpty(doctor.UserId))
+            {
+                var user =
+                    await _userManager.FindByIdAsync(
+                        doctor.UserId);
+
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
+            }
         }
 
+
         await _context.SaveChangesAsync();
+
+
         return RedirectToAction(nameof(Index));
     }
 
+
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Deleted()
+    {
+        var deletedDoctors = await _context.Doctors
+            .Where(d => d.IsDeleted)
+            .OrderByDescending(d => d.DeletedAt)
+            .ToListAsync();
+
+
+        return View(deletedDoctors);
+    }
+
+
+
+
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> Restore(int? id)
+    {
+        if (id == null)
+            return NotFound();
+
+        var doctor = await _context.Doctors
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == id &&
+                d.IsDeleted);
+
+        if (doctor == null)
+            return NotFound();
+
+        return View(doctor);
+    }
+
+
+
+
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    [Authorize(Roles = "Admin")]
+    public async Task<IActionResult> RestoreConfirmed(int? id)
+    {
+        if (id == null)
+            return NotFound();
+
+        var doctor = await _context.Doctors
+            .FirstOrDefaultAsync(d =>
+                d.DoctorId == id &&
+                d.IsDeleted);
+
+        if (doctor == null)
+            return NotFound();
+
+
+        doctor.IsDeleted = false;
+        doctor.DeletedAt = null;
+
+        if (!string.IsNullOrEmpty(doctor.UserId))
+        {
+            var user =
+                await _userManager.FindByIdAsync(
+                    doctor.UserId);
+
+            if (user != null)
+            {
+                user.IsActive = true;
+            }
+        }
+
+
+        await _context.SaveChangesAsync();
+
+
+        return RedirectToAction(nameof(Deleted));
+    }
+
+
+
     private bool DoctorExists(int? id)
     {
-        return _context.Doctors.Any(e => e.DoctorId == id);
+        return _context.Doctors
+            .Any(d => d.DoctorId == id);
     }
 }

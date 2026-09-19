@@ -4,65 +4,114 @@ namespace DigitalPrescriptionProject.Data.Seed
 {
     public static class IdentitySeed
     {
-        public static async Task SeedRolesAsync(RoleManager<ApplicationRole> roleManger)
+        public static async Task SeedRolesAsync(
+            RoleManager<ApplicationRole> roleManager)
         {
             string[] roles =
             {
-                "Admin", "Doctor","Patient"
+                "Admin",
+                "Doctor",
+                "Patient"
             };
 
             foreach (var role in roles)
             {
-               if(!await roleManger.RoleExistsAsync(role))
+                if (!await roleManager.RoleExistsAsync(role))
                 {
-                    await roleManger.CreateAsync(new ApplicationRole
-                    {
-                        Name = role
-                    });
+                    await roleManager.CreateAsync(
+                        new ApplicationRole
+                        {
+                            Name = role
+                        });
                 }
             }
         }
+
+
         public static async Task SeedAdminUserAsync(
-    UserManager<ApplicationUser> userManager)
+            UserManager<ApplicationUser> userManager)
         {
-            var adminEmail = "admin@digitalprascription.com";
+            var adminEmail =
+                "admin@digitalprascription.com";
 
             var existingUser =
-                await userManager.FindByEmailAsync(adminEmail);
+                await userManager.FindByEmailAsync(
+                    adminEmail);
 
-            if (existingUser == null)
+
+            if (existingUser != null)
             {
-                var adminUser = new ApplicationUser
+                bool changed = false;
+
+                if (!existingUser.IsActive)
                 {
-                    UserName = adminEmail,
-                    Email = adminEmail,
-                    EmailConfirmed = true
-                };
+                    existingUser.IsActive = true;
+                    changed = true;
+                }
 
-                var result =
-                    await userManager.CreateAsync(
-                        adminUser,
-                        "Admin@12345"
-                    );
 
-                if (result.Succeeded)
+                if (existingUser.MustChangePassword)
+                {
+                    existingUser.MustChangePassword = false;
+                    changed = true;
+                }
+
+
+                if (changed)
+                {
+                    await userManager.UpdateAsync(
+                        existingUser);
+                }
+
+
+                if (!await userManager.IsInRoleAsync(
+                    existingUser,
+                    "Admin"))
                 {
                     await userManager.AddToRoleAsync(
-                        adminUser,
-                        "Admin"
-                    );
+                        existingUser,
+                        "Admin");
                 }
-                else
+
+
+                return;
+            }
+
+
+
+            var adminUser = new ApplicationUser
+            {
+                UserName = adminEmail,
+                Email = adminEmail,
+
+                EmailConfirmed = true,
+
+                IsActive = true,
+
+                MustChangePassword = false
+            };
+
+
+            var result =
+                await userManager.CreateAsync(
+                    adminUser,
+                    "Admin@12345");
+
+
+            if (result.Succeeded)
+            {
+                await userManager.AddToRoleAsync(
+                    adminUser,
+                    "Admin");
+            }
+            else
+            {
+                foreach (var error in result.Errors)
                 {
-                    foreach (var error in result.Errors)
-                    {
-                        Console.WriteLine(
-                            $"Identity Error: {error.Code} - {error.Description}"
-                        );
-                    }
+                    Console.WriteLine(
+                        $"Identity Error: {error.Code} - {error.Description}");
                 }
             }
         }
     }
-    
 }

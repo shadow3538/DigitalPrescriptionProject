@@ -1,0 +1,96 @@
+﻿@model DigitalPrescriptionProject.Models.Doctor
+
+@{
+    ViewData["Title"] = "Restore Doctor";
+}
+
+<div class="container mt-4">
+
+    <div class="card shadow-sm">
+
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">
+                <i class="bi bi-arrow-counterclockwise me-2"></i>
+                Restore Doctor
+            </h4>
+        </div>
+
+        <div class="card-body">
+
+            <div class="alert alert-warning">
+                Are you sure you want to restore this doctor?
+            </div>
+
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <strong>Doctor Name</strong>
+
+                    <div class="form-control bg-light">
+                        @Model.FullName
+                    </div>
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+                    <strong>Email</strong>
+
+                    <div class="form-control bg-light">
+                        @Model.Email
+                    </div>
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+                    <strong>Phone</strong>
+
+                    <div class="form-control bg-light">
+                        @Model.Phone
+                    </div>
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+                    <strong>Speciality</strong>
+
+                    <div class="form-control bg-light">
+                        @Model.Speciality
+                    </div>
+                </div>
+
+            </div>
+
+
+            <form asp-action="RestoreConfirmed"
+                  method="post">
+
+                <input type="hidden"
+                       name="id"
+                       value="@Model.DoctorId" />
+
+
+                <button type="submit"
+                        class="btn btn-success"
+                        onclick="return confirm('Are you sure you want to restore this doctor?');">
+
+                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                    Restore Doctor
+
+                </button>
+
+
+                <a asp-action="Deleted"
+                   class="btn btn-secondary ms-2">
+
+                    <i class="bi bi-arrow-left me-1"></i>
+                    Cancel
+
+                </a>
+
+            </form>
+
+        </div>
+
+    </div>
+
+</div>

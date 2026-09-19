@@ -1,0 +1,135 @@
+﻿@model IEnumerable<DigitalPrescriptionProject.Models.Patient>
+
+@{
+    ViewData["Title"] = "Deleted Patients";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-trash text-danger me-2"></i>
+                Deleted Patients
+            </h2>
+
+            <p class="text-muted mb-0">
+                Patients that have been soft deleted
+            </p>
+        </div>
+
+        <a asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to Patients
+
+        </a>
+
+    </div>
+
+
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle me-2"></i>
+            No deleted patients found.
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive rounded-3">
+
+            <table class="table table-hover table-bordered align-middle">
+
+                <thead class="table-dark">
+
+                    <tr>
+
+                        <th>
+                            Name
+                        </th>
+
+                        <th>
+                            Age
+                        </th>
+
+                        <th>
+                            Phone
+                        </th>
+
+                        <th>
+                            Email
+                        </th>
+
+                        <th>
+                            Gender
+                        </th>
+
+                        <th>
+                            Deleted At
+                        </th>
+
+                        <th>
+                            Action
+                        </th>
+
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @foreach (var item in Model)
+                    {
+                        <tr>
+
+                            <td>
+                                @item.FullName
+                            </td>
+
+                            <td>
+                                @item.Age
+                            </td>
+
+                            <td>
+                                @item.Phone
+                            </td>
+
+                            <td>
+                                @item.Email
+                            </td>
+
+                            <td>
+                                @item.Gender
+                            </td>
+
+                            <td>
+                                @item.DeletedAt?.ToString("yyyy-MM-dd HH:mm")
+                            </td>
+
+                            <td>
+
+                                <a asp-action="Restore"
+                                   asp-route-id="@item.PatientId"
+                                   class="btn btn-sm btn-outline-success">
+
+                                    <i class="bi bi-arrow-counterclockwise me-1"></i>
+                                    Restore
+
+                                </a>
+
+                            </td>
+
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+    }
+
+</div>

@@ -8,6 +8,7 @@ using Serilog;
 using Serilog.Events;
 using Serilog.Sinks.MSSqlServer;
 using DigitalPrescriptionProject.Filters;
+using Microsoft.AspNetCore.Authentication;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,9 +27,12 @@ builder.Services.AddTransient<IEmailSender, DevelopmentEmailSender>();
 
 builder.Services.AddScoped<MustChangePasswordFilter>();
 
+builder.Services.AddScoped<ActiveUserFilter>();
+
 builder.Services.AddControllersWithViews(op =>
 {
     op.Filters.AddService<MustChangePasswordFilter>();
+    op.Filters.AddService<ActiveUserFilter>();
 });
 
 

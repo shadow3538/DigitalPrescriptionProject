@@ -39,6 +39,10 @@ namespace DigitalPrescriptionProject.Models
         [NotMapped]
         public IFormFile? Upload { get; set; }
 
+        public bool IsDeleted { get; set; } = false;
+
+        public DateTime? DeletedAt { get; set; }
+
         public List<Prescription> Prescriptions { get; set; } = new();
 
         public void SaveDoctorImage(IWebHostEnvironment env)

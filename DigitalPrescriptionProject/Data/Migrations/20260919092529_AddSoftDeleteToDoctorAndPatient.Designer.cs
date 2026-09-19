@@ -4,6 +4,7 @@ using DigitalPrescriptionProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalPrescriptionProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260919092529_AddSoftDeleteToDoctorAndPatient")]
+    partial class AddSoftDeleteToDoctorAndPatient
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -66,9 +69,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
-                        .HasColumnType("bit");
-
-                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -131,9 +131,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -143,9 +140,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -177,7 +171,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "john.smith@example.com",
                             FirstName = "John",
                             ImagePath = "/Images/DoctorsImage/doctor1.jpg",
-                            IsDeleted = false,
                             LastName = "Smith",
                             Phone = "01711111111",
                             Speciality = 0
@@ -189,7 +182,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "sarah.williams@example.com",
                             FirstName = "Sarah",
                             ImagePath = "/Images/DoctorsImage/doctor2.jpg",
-                            IsDeleted = false,
                             LastName = "Williams",
                             Phone = "01722222222",
                             Speciality = 2
@@ -201,7 +193,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "michael.brown@example.com",
                             FirstName = "Michael",
                             ImagePath = "/Images/DoctorsImage/doctor3.jpg",
-                            IsDeleted = false,
                             LastName = "Brown",
                             Phone = "01733333333",
                             Speciality = 3
@@ -213,7 +204,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "emily.davis@example.com",
                             FirstName = "Emily",
                             ImagePath = "/Images/DoctorsImage/doctor4.jpg",
-                            IsDeleted = false,
                             LastName = "Davis",
                             Phone = "01744444444",
                             Speciality = 4
@@ -225,7 +215,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "david.wilson@example.com",
                             FirstName = "David",
                             ImagePath = "/Images/DoctorsImage/doctor5.jpg",
-                            IsDeleted = false,
                             LastName = "Wilson",
                             Phone = "01755555555",
                             Speciality = 5
@@ -237,7 +226,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "olivia.taylor@example.com",
                             FirstName = "Olivia",
                             ImagePath = "/Images/DoctorsImage/doctor6.jpg",
-                            IsDeleted = false,
                             LastName = "Taylor",
                             Phone = "01766666666",
                             Speciality = 12
@@ -249,7 +237,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "robert.anderson@example.com",
                             FirstName = "Robert",
                             ImagePath = "/Images/DoctorsImage/doctor7.jpg",
-                            IsDeleted = false,
                             LastName = "Anderson",
                             Phone = "01777777777",
                             Speciality = 7
@@ -261,7 +248,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "sophia.thomas@example.com",
                             FirstName = "Sophia",
                             ImagePath = "/Images/DoctorsImage/doctor8.jpg",
-                            IsDeleted = false,
                             LastName = "Thomas",
                             Phone = "01788888888",
                             Speciality = 6
@@ -273,7 +259,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "daniel.moore@example.com",
                             FirstName = "Daniel",
                             ImagePath = "/Images/DoctorsImage/doctor9.jpg",
-                            IsDeleted = false,
                             LastName = "Moore",
                             Phone = "01799999999",
                             Speciality = 9
@@ -285,7 +270,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Email = "emma.martin@example.com",
                             FirstName = "Emma",
                             ImagePath = "/Images/DoctorsImage/doctor10.jpg",
-                            IsDeleted = false,
                             LastName = "Martin",
                             Phone = "01811111111",
                             Speciality = 15
@@ -306,9 +290,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateTime?>("DeletedAt")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Email")
                         .HasColumnType("nvarchar(max)");
 
@@ -321,9 +302,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
 
                     b.Property<string>("ImagePath")
                         .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsDeleted")
-                        .HasColumnType("bit");
 
                     b.Property<string>("LastName")
                         .IsRequired()
@@ -354,7 +332,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Rahim",
                             Gender = 0,
                             ImagePath = "/Images/PatientsImage/patient1.jpg",
-                            IsDeleted = false,
                             LastName = "Ahmed",
                             Phone = "01811112222"
                         },
@@ -367,7 +344,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Nusrat",
                             Gender = 1,
                             ImagePath = "/Images/PatientsImage/patient2.jpg",
-                            IsDeleted = false,
                             LastName = "Jahan",
                             Phone = "01822223333"
                         },
@@ -380,7 +356,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Karim",
                             Gender = 0,
                             ImagePath = "/Images/PatientsImage/patient3.jpg",
-                            IsDeleted = false,
                             LastName = "Hossain",
                             Phone = "01833334444"
                         },
@@ -393,7 +368,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Mim",
                             Gender = 1,
                             ImagePath = "/Images/PatientsImage/patient4.jpg",
-                            IsDeleted = false,
                             LastName = "Akter",
                             Phone = "01844445555"
                         },
@@ -406,7 +380,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Sakib",
                             Gender = 0,
                             ImagePath = "/Images/PatientsImage/patient5.jpg",
-                            IsDeleted = false,
                             LastName = "Hasan",
                             Phone = "01855556666"
                         },
@@ -419,7 +392,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Sumaiya",
                             Gender = 1,
                             ImagePath = "/Images/PatientsImage/patient6.jpg",
-                            IsDeleted = false,
                             LastName = "Rahman",
                             Phone = "01866667777"
                         },
@@ -432,7 +404,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Imran",
                             Gender = 0,
                             ImagePath = "/Images/PatientsImage/patient7.jpg",
-                            IsDeleted = false,
                             LastName = "Kabir",
                             Phone = "01877778888"
                         },
@@ -445,7 +416,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Ayesha",
                             Gender = 1,
                             ImagePath = "/Images/PatientsImage/patient8.jpg",
-                            IsDeleted = false,
                             LastName = "Sultana",
                             Phone = "01888889999"
                         },
@@ -458,7 +428,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Tanvir",
                             Gender = 0,
                             ImagePath = "/Images/PatientsImage/patient9.jpg",
-                            IsDeleted = false,
                             LastName = "Islam",
                             Phone = "01911112222"
                         },
@@ -471,7 +440,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Fariha",
                             Gender = 1,
                             ImagePath = "/Images/PatientsImage/patient10.jpg",
-                            IsDeleted = false,
                             LastName = "Chowdhury",
                             Phone = "01922223333"
                         },
@@ -484,7 +452,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Arif",
                             Gender = 0,
                             ImagePath = "/Images/PatientsImage/patient11.jpg",
-                            IsDeleted = false,
                             LastName = "Mahmud",
                             Phone = "01933334444"
                         },
@@ -497,7 +464,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             FirstName = "Raisa",
                             Gender = 1,
                             ImagePath = "/Images/PatientsImage/patient12.jpg",
-                            IsDeleted = false,
                             LastName = "Islam",
                             Phone = "01944445555"
                         });

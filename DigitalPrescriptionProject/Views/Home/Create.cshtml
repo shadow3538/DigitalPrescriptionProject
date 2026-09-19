@@ -1,0 +1,136 @@
+﻿@{
+    ViewData["Title"] = "Create";
+}
+
+<div class="container-fluid py-4">
+
+
+    <div class="text-center mb-5">
+
+        <h2 class="fw-bold mb-2">
+            <i class="bi bi-plus-circle text-primary me-2"></i>
+            What do you want to create?
+        </h2>
+
+        <p class="text-muted">
+            Select the type of record you want to create
+        </p>
+
+    </div>
+
+
+    <div class="row justify-content-center g-4">
+
+
+        <div class="col-md-5 col-lg-4">
+
+            <a asp-controller="Doctor"
+               asp-action="Create"
+               class="text-decoration-none">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body text-center p-5">
+
+                        <div class="rounded-circle
+                                    bg-success-subtle
+                                    text-success
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center
+                                    mx-auto
+                                    mb-4"
+                             style="width:90px;height:90px;">
+
+                            <i class="bi bi-person-badge fs-1"></i>
+
+                        </div>
+
+                        <h4 class="fw-bold text-dark mb-2">
+                            Create Doctor
+                        </h4>
+
+                        <p class="text-muted mb-4">
+                            Create a new doctor account
+                            and assign the Doctor role.
+                        </p>
+
+                        <span class="btn btn-outline-success">
+                            Continue
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+        <div class="col-md-5 col-lg-4">
+
+            <a asp-controller="Patient"
+               asp-action="Create"
+               class="text-decoration-none">
+
+                <div class="card border-0 shadow-sm h-100">
+
+                    <div class="card-body text-center p-5">
+
+                        <div class="rounded-circle
+                                    bg-primary-subtle
+                                    text-primary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center
+                                    mx-auto
+                                    mb-4"
+                             style="width:90px;height:90px;">
+
+                            <i class="bi bi-person-plus fs-1"></i>
+
+                        </div>
+
+                        <h4 class="fw-bold text-dark mb-2">
+                            Create Patient
+                        </h4>
+
+                        <p class="text-muted mb-4">
+                            Create a new patient account
+                            and assign the Patient role.
+                        </p>
+
+                        <span class="btn btn-outline-primary">
+                            Continue
+                            <i class="bi bi-arrow-right ms-1"></i>
+                        </span>
+
+                    </div>
+
+                </div>
+
+            </a>
+
+        </div>
+
+
+    </div>
+
+
+    <div class="text-center mt-5">
+
+        <a asp-controller="Home"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+</div>

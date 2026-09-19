@@ -1,82 +1,89 @@
 @model DigitalPrescriptionProject.Models.Doctor
 
 @{
-    ViewData["Title"] = "Edit";
+    ViewData["Title"] = "Edit Doctor";
 }
 
-<h1>Edit</h1>
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+            <div class="bg-white p-4 p-md-5 rounded-4 shadow">
+                <div class="d-flex align-items-center justify-content-between border-bottom pb-3 mb-4">
+                    <div>
+                        <h3 class="fw-bold text-dark m-0">Edit Doctor Profile</h3>
+                        <p class="text-muted small m-0">Update doctor information and details</p>
+                    </div>
+                    <a asp-action="Index" class="btn btn-light rounded-pill px-3 fw-semibold text-secondary">
+                        ← Back to List
+                    </a>
+                </div>
 
-<h4>Doctor</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Edit" enctype="multipart/form-data">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <input type="hidden" asp-for="DoctorId" />
+                <form asp-action="Edit" enctype="multipart/form-data">
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger rounded-3" role="alert"></div>
+                    <input type="hidden" asp-for="DoctorId" />
+                    <input type="hidden" asp-for="ImagePath" />
 
-            <div class="form-group">
-                <label asp-for="FirstName" class="control-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+                    <div class="row g-4">
+                        <div class="col-md-4">
+                            <label asp-for="FirstName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FirstName" class="form-control form-control-lg bg-light border-0" placeholder="First Name" />
+                            <span asp-validation-for="FirstName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="LastName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="LastName" class="form-control form-control-lg bg-light border-0" placeholder="Last Name" />
+                            <span asp-validation-for="LastName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="FullName" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="FullName" class="form-control form-control-lg bg-light border-0" placeholder="Full Name" />
+                            <span asp-validation-for="FullName" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-8">
+                            <label asp-for="Speciality" class="form-label fw-semibold text-secondary"></label>
+                            <select asp-for="Speciality" class="form-select form-select-lg bg-light border-0" asp-items="Html.GetEnumSelectList<Speciality>()">
+                                <option value="">Select Speciality</option>
+                            </select>
+                            <span asp-validation-for="Speciality" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-4">
+                            <label asp-for="Age" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Age" class="form-control form-control-lg bg-light border-0" placeholder="Age" />
+                            <span asp-validation-for="Age" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Phone" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Phone" class="form-control form-control-lg bg-light border-0" placeholder="Phone Number" />
+                            <span asp-validation-for="Phone" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-md-6">
+                            <label asp-for="Email" class="form-label fw-semibold text-secondary"></label>
+                            <input asp-for="Email" class="form-control form-control-lg bg-light border-0" placeholder="Email Address" />
+                            <span asp-validation-for="Email" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12">
+                            <label asp-for="Upload" class="form-label fw-semibold text-secondary">Profile Image</label>
+                            <input asp-for="Upload" class="form-control form-control-lg bg-light border-0" type="file" />
+                            <span asp-validation-for="Upload" class="text-danger small"></span>
+                        </div>
+
+                        <div class="col-12 pt-3">
+                            <button type="submit" class="btn btn-primary btn-lg w-100 rounded-3 fw-bold">
+                                Save Changes
+                            </button>
+                        </div>
+                    </div>
+                </form>
             </div>
-
-            <div class="form-group">
-                <label asp-for="LastName" class="control-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="FullName" class="control-label"></label>
-                <input asp-for="FullName" class="form-control" />
-                <span asp-validation-for="FullName" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Speciality" class="control-label"></label>
-                <select asp-for="Speciality" class="form-select" asp-items="Html.GetEnumSelectList<Speciality>()">
-                    <option value="">Select Speciality</option>
-                </select>
-                <span asp-validation-for="Speciality" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Age" class="control-label"></label>
-                <input asp-for="Age" class="form-control" />
-                <span asp-validation-for="Age" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Phone" class="control-label"></label>
-                <input asp-for="Phone" class="form-control" />
-                <span asp-validation-for="Phone" class="text-danger"></span>
-            </div>
-
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-
-
-
-            <div class="form-group">
-                <label asp-for="Upload" class="control-label"></label>
-                <input asp-for="ImagePath" class="form-control" type="hidden" />
-                <input asp-for="Upload" class="form-control" type="file" />
-                <span asp-validation-for="Upload" class="text-danger"></span>
-            </div>
-
-
-            <div class="form-group">
-                <input type="submit" value="Save" class="btn btn-primary" />
-            </div>
-        </form>
+        </div>
     </div>
-</div>
-
-<div>
-    <a asp-action="Index">Back to List</a>
 </div>
 
 @section Scripts {

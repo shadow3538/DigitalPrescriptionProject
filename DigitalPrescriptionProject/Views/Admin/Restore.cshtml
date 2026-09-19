@@ -1,0 +1,276 @@
+﻿@using DigitalPrescriptionProject.Models
+@{
+    ViewData["Title"] = "Restore System";
+
+    var doctors = ViewBag.DeletedDoctors as List<Doctor>;
+    var patients = ViewBag.DeletedPatients as List<Patient>;
+}
+
+<div class="container-fluid py-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+
+        <div>
+            <h2 class="fw-bold mb-1">
+                <i class="bi bi-arrow-counterclockwise text-primary me-2"></i>
+                Restore System
+            </h2>
+
+            <p class="text-muted mb-0">
+                Restore deleted doctors and patients
+            </p>
+        </div>
+
+        <a asp-controller="Admin"
+           asp-action="Index"
+           class="btn btn-outline-secondary">
+
+            <i class="bi bi-arrow-left me-1"></i>
+            Back to Dashboard
+
+        </a>
+
+    </div>
+
+
+
+    <div class="card shadow-sm border-0 mb-4">
+
+        <div class="card-header bg-success text-white">
+
+            <h5 class="mb-0">
+                <i class="bi bi-person-badge me-2"></i>
+                Deleted Doctors
+            </h5>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            @if (doctors != null && doctors.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th class="ps-4">Name</th>
+                                <th>Speciality</th>
+                                <th>Phone</th>
+                                <th>Deleted At</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var doctor in doctors)
+                            {
+                                <tr>
+
+                                    <td class="ps-4">
+
+                                        <div class="fw-semibold">
+                                            @doctor.FullName
+                                        </div>
+
+                                        <small class="text-muted">
+                                            Doctor
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+                                        @doctor.Speciality
+                                    </td>
+
+                                    <td>
+                                        @doctor.Phone
+                                    </td>
+
+                                    <td>
+                                        @(doctor.DeletedAt?.ToString("dd MMM yyyy hh:mm tt")
+                                            ?? "N/A")
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <form asp-controller="Admin"
+                                              asp-action="RestoreDoctor"
+                                              method="post"
+                                              class="d-inline">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@doctor.DoctorId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-success">
+
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>
+                                                Restore
+
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+
+                    <i class="bi bi-person-check display-5 d-block mb-3"></i>
+
+                    <h5>
+                        No deleted doctors
+                    </h5>
+
+                    <p class="mb-0">
+                        There are no doctors available for restoration.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card shadow-sm border-0">
+
+        <div class="card-header bg-primary text-white">
+
+            <h5 class="mb-0">
+                <i class="bi bi-person-heart me-2"></i>
+                Deleted Patients
+            </h5>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            @if (patients != null && patients.Any())
+            {
+                <div class="table-responsive">
+
+                    <table class="table table-hover align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+                                <th class="ps-4">Name</th>
+                                <th>Age</th>
+                                <th>Gender</th>
+                                <th>Phone</th>
+                                <th>Deleted At</th>
+                                <th class="text-center">Action</th>
+                            </tr>
+
+                        </thead>
+
+                        <tbody>
+
+                            @foreach (var patient in patients)
+                            {
+                                <tr>
+
+                                    <td class="ps-4">
+
+                                        <div class="fw-semibold">
+                                            @patient.FullName
+                                        </div>
+
+                                        <small class="text-muted">
+                                            Patient
+                                        </small>
+
+                                    </td>
+
+                                    <td>
+                                        @patient.Age
+                                    </td>
+
+                                    <td>
+                                        @patient.Gender
+                                    </td>
+
+                                    <td>
+                                        @patient.Phone
+                                    </td>
+
+                                    <td>
+                                        @(patient.DeletedAt?.ToString("dd MMM yyyy hh:mm tt")
+                                            ?? "N/A")
+                                    </td>
+
+                                    <td class="text-center">
+
+                                        <form asp-controller="Admin"
+                                              asp-action="RestorePatient"
+                                              method="post"
+                                              class="d-inline">
+
+                                            <input type="hidden"
+                                                   name="id"
+                                                   value="@patient.PatientId" />
+
+                                            <button type="submit"
+                                                    class="btn btn-sm btn-outline-primary">
+
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>
+                                                Restore
+
+                                            </button>
+
+                                        </form>
+
+                                    </td>
+
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+            }
+            else
+            {
+                <div class="text-center py-5 text-muted">
+
+                    <i class="bi bi-person-check display-5 d-block mb-3"></i>
+
+                    <h5>
+                        No deleted patients
+                    </h5>
+
+                    <p class="mb-0">
+                        There are no patients available for restoration.
+                    </p>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
