@@ -134,8 +134,9 @@ namespace DigitalPrescriptionProject.Controllers
                 .Include(p => p.Patient)
                 .Include(p => p.Doctor)
                 .Include(p => p.PrescribedTests)
+                    .ThenInclude(t => t.TestResult)
                 .Include(p => p.PrescriptionItems)
-
+                .Include(p => p.MedicalDocuments)
                 .FirstOrDefaultAsync(
                     p => p.PrescriptionId == id);
 

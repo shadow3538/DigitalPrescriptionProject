@@ -20,6 +20,141 @@ public class PatientController : Controller
         _userManager = userManager;
     }
 
+
+
+
+    [Authorize(Roles = "Patient")]
+    public async Task<IActionResult> Dashboard()
+    {
+
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Forbid();
+
+
+        var patient = await _context.Patients
+            .FirstOrDefaultAsync(p =>
+                p.UserId == user.Id &&
+                !p.IsDeleted);
+
+        if (patient == null)
+            return Forbid();
+
+
+
+        var prescriptions =
+            _context.Prescriptions
+                .Where(p =>
+                    p.PatientId == patient.PatientId);
+
+
+
+        var totalPrescriptions =
+            await prescriptions.CountAsync();
+
+
+
+        var doctorsVisited =
+            await prescriptions
+                .Select(p => p.DoctorId)
+                .Distinct()
+                .CountAsync();
+
+
+
+        var medicinesPrescribed =
+            await _context.PrescriptionItems
+                .Where(item =>
+                    item.Prescription != null &&
+                    item.Prescription.PatientId ==
+                    patient.PatientId)
+                .CountAsync();
+
+
+        var testsPrescribed =
+            await _context.PrescribedTests
+                .Where(test =>
+                    test.Prescription != null &&
+                    test.Prescription.PatientId ==
+                    patient.PatientId)
+                .CountAsync();
+
+
+
+        var latestVisitDate =
+            await prescriptions
+                .Select(p => (DateTime?)p.VisitDate)
+                .OrderByDescending(d => d)
+                .FirstOrDefaultAsync();
+
+
+
+        var recentPrescriptions =
+            await prescriptions
+
+                .Include(p => p.Doctor)
+
+                .OrderByDescending(
+                    p => p.VisitDate)
+
+                .ThenByDescending(
+                    p => p.PrescriptionId)
+
+                .Take(5)
+
+                .ToListAsync();
+
+
+        var model =
+            new PatientDashboardViewModel
+            {
+                PatientName =
+                    patient.FullName,
+
+                PatientImage =
+                    patient.ImagePath,
+
+                Age =
+                    patient.Age,
+
+                Gender =
+                    patient.Gender,
+
+                Phone =
+                    patient.Phone,
+
+                Email =
+                    patient.Email,
+
+                TotalPrescriptions =
+                    totalPrescriptions,
+
+                DoctorsVisited =
+                    doctorsVisited,
+
+                MedicinesPrescribed =
+                    medicinesPrescribed,
+
+                TestsPrescribed =
+                    testsPrescribed,
+
+                LatestVisitDate =
+                    latestVisitDate,
+
+                RecentPrescriptions =
+                    recentPrescriptions
+            };
+
+
+        return View(model);
+    }
+
+
+
+
+
+
     public async Task<IActionResult> Index(
         string? search,
         int page = 1,
@@ -86,12 +221,15 @@ public class PatientController : Controller
         if (id == null)
             return NotFound();
 
+
         var patient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
-                        p.PatientId == id &&
-                        !p.IsDeleted);
+    await _context.Patients
+        .Include(p => p.MedicalDocuments)
+        .FirstOrDefaultAsync(
+            p =>
+                p.PatientId == id &&
+                !p.IsDeleted);
+
 
         if (patient == null)
             return NotFound();
@@ -353,11 +491,11 @@ public class PatientController : Controller
     [ActionName("Delete")]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> DeleteConfirmed(
-        int? id)
+    public async Task<IActionResult> DeleteConfirmed(int? id)
     {
         if (id == null)
             return NotFound();
+
 
         var patient =
             await _context.Patients
@@ -366,29 +504,68 @@ public class PatientController : Controller
                         p.PatientId == id &&
                         !p.IsDeleted);
 
+
         if (patient == null)
             return NotFound();
 
-        patient.IsDeleted = true;
-        patient.DeletedAt = DateTime.Now;
 
-        if (!string.IsNullOrEmpty(patient.UserId))
+        var hasPrescription =
+            await _context.Prescriptions
+                .AnyAsync(p =>
+                    p.PatientId == patient.PatientId);
+
+
+        if (hasPrescription)
         {
-            var user =
-                await _userManager.FindByIdAsync(
-                    patient.UserId);
+            patient.IsDeleted = true;
 
-            if (user != null)
+            patient.DeletedAt = DateTime.Now;
+
+
+            if (!string.IsNullOrEmpty(patient.UserId))
             {
-                user.IsActive = false;
+                var user =
+                    await _userManager.FindByIdAsync(
+                        patient.UserId);
+
+                if (user != null)
+                {
+                    user.IsActive = false;
+                }
             }
         }
 
+
+        else
+        {
+
+            _context.Patients.Remove(patient);
+
+
+            if (!string.IsNullOrEmpty(patient.UserId))
+            {
+                var user =
+                    await _userManager.FindByIdAsync(
+                        patient.UserId);
+
+                if (user != null)
+                {
+                    await _userManager.DeleteAsync(user);
+                }
+            }
+        }
+
+
         await _context.SaveChangesAsync();
+
 
         return RedirectToAction(
             nameof(Index));
     }
+
+
+
+
 
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Restore(int? id)

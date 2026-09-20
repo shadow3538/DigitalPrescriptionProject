@@ -51,6 +51,8 @@ namespace DigitalPrescriptionProject.Models
 
         public List<Prescription> Prescriptions { get; set; } = new();
 
+        public List<MedicalDocument> MedicalDocuments { get; set; } = new();
+
         public void SavePatientImage(IWebHostEnvironment env)
         {
             if (Upload is null || Upload.Length == 0)

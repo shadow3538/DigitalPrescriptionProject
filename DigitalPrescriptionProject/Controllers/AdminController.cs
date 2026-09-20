@@ -17,38 +17,127 @@ namespace DigitalPrescriptionProject.Controllers
         }
 
 
-
         // GET: Admin
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Index()
         {
+            var today = DateTime.Today;
 
-            var totalDoctors = await _context.Doctors
-                .CountAsync(d => !d.IsDeleted);
+            var tomorrow = today.AddDays(1);
 
-            var deletedDoctors = await _context.Doctors
-                .CountAsync(d => d.IsDeleted);
+            var firstDayOfMonth =
+                new DateTime(
+                    today.Year,
+                    today.Month,
+                    1);
 
-            var totalPatients = await _context.Patients
-                .CountAsync(p => !p.IsDeleted);
+            var firstDayOfNextMonth =
+                firstDayOfMonth.AddMonths(1);
 
-            var deletedPatients = await _context.Patients
-                .CountAsync(p => p.IsDeleted);
+
+
+            var totalDoctors =
+                await _context.Doctors
+                    .CountAsync();
+
+            var activeDoctors =
+                await _context.Doctors
+                    .CountAsync(d => !d.IsDeleted);
+
+            var deletedDoctors =
+                await _context.Doctors
+                    .CountAsync(d => d.IsDeleted);
+
+
+            var totalPatients =
+                await _context.Patients
+                    .CountAsync();
+
+            var activePatients =
+                await _context.Patients
+                    .CountAsync(p => !p.IsDeleted);
+
+            var deletedPatients =
+                await _context.Patients
+                    .CountAsync(p => p.IsDeleted);
+
 
             var totalPrescriptions =
-                await _context.Prescriptions.CountAsync();
+                await _context.Prescriptions
+                    .CountAsync();
+
+            var activePrescriptions =
+                totalPrescriptions;
+
+            var deletedPrescriptions =
+                0;
 
 
-            ViewBag.TotalDoctors = totalDoctors;
-            ViewBag.DeletedDoctors = deletedDoctors;
-
-            ViewBag.TotalPatients = totalPatients;
-            ViewBag.DeletedPatients = deletedPatients;
-
-            ViewBag.TotalPrescriptions = totalPrescriptions;
+            var todayPrescriptions =
+                await _context.Prescriptions
+                    .CountAsync(p =>
+                        p.VisitDate >= today &&
+                        p.VisitDate < tomorrow);
 
 
-            return View();
+
+            var thisMonthPrescriptions =
+                await _context.Prescriptions
+                    .CountAsync(p =>
+                        p.VisitDate >= firstDayOfMonth &&
+                        p.VisitDate < firstDayOfNextMonth);
+
+
+            var recentPrescriptions =
+                await _context.Prescriptions
+
+                    .Include(p => p.Patient)
+
+                    .Include(p => p.Doctor)
+
+                    .OrderByDescending(
+                        p => p.VisitDate)
+
+                    .ThenByDescending(
+                        p => p.PrescriptionId)
+
+                    .Take(5)
+
+                    .ToListAsync();
+
+
+            var model =
+                new AdminDashboardViewModel
+                {
+                    TotalDoctors = totalDoctors,
+                    ActiveDoctors = activeDoctors,
+                    DeletedDoctors = deletedDoctors,
+
+                    TotalPatients = totalPatients,
+                    ActivePatients = activePatients,
+                    DeletedPatients = deletedPatients,
+
+                    TotalPrescriptions =
+                        totalPrescriptions,
+
+                    ActivePrescriptions =
+                        activePrescriptions,
+
+                    DeletedPrescriptions =
+                        deletedPrescriptions,
+
+                    TodayPrescriptions =
+                        todayPrescriptions,
+
+                    ThisMonthPrescriptions =
+                        thisMonthPrescriptions,
+
+                    RecentPrescriptions =
+                        recentPrescriptions
+                };
+
+
+            return View(model);
         }
 
 
@@ -63,16 +152,21 @@ namespace DigitalPrescriptionProject.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> Restore()
         {
-            var deletedDoctors = await _context.Doctors
-                .Where(d => d.IsDeleted)
-                .ToListAsync();
+            var deletedDoctors =
+                await _context.Doctors
+                    .Where(d => d.IsDeleted)
+                    .ToListAsync();
 
-            var deletedPatients = await _context.Patients
-                .Where(p => p.IsDeleted)
-                .ToListAsync();
+            var deletedPatients =
+                await _context.Patients
+                    .Where(p => p.IsDeleted)
+                    .ToListAsync();
 
-            ViewBag.DeletedDoctors = deletedDoctors;
-            ViewBag.DeletedPatients = deletedPatients;
+            ViewBag.DeletedDoctors =
+                deletedDoctors;
+
+            ViewBag.DeletedPatients =
+                deletedPatients;
 
             return View();
         }
@@ -84,13 +178,16 @@ namespace DigitalPrescriptionProject.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RestoreDoctor(int id)
         {
-            var doctor = await _context.Doctors
-                .FirstOrDefaultAsync(d => d.DoctorId == id);
+            var doctor =
+                await _context.Doctors
+                    .FirstOrDefaultAsync(
+                        d => d.DoctorId == id);
 
             if (doctor == null)
                 return NotFound();
 
             doctor.IsDeleted = false;
+
             doctor.DeletedAt = null;
 
             await _context.SaveChangesAsync();
@@ -105,13 +202,16 @@ namespace DigitalPrescriptionProject.Controllers
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> RestorePatient(int id)
         {
-            var patient = await _context.Patients
-                .FirstOrDefaultAsync(p => p.PatientId == id);
+            var patient =
+                await _context.Patients
+                    .FirstOrDefaultAsync(
+                        p => p.PatientId == id);
 
             if (patient == null)
                 return NotFound();
 
             patient.IsDeleted = false;
+
             patient.DeletedAt = null;
 
             await _context.SaveChangesAsync();

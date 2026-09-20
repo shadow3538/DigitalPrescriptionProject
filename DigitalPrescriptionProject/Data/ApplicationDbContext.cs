@@ -12,12 +12,15 @@ namespace DigitalPrescriptionProject.Data
         public DbSet<Prescription> Prescriptions { get; set; }
         public DbSet<PrescriptionItem> PrescriptionItems { get; set; }
         public DbSet<PrescribedTest> PrescribedTests { get; set; }
+        public DbSet<TestResult> TestResults { get; set; }
+        public DbSet<MedicalDocument> MedicalDocuments { get; set; }
+
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
 
-  
+
             modelBuilder.Entity<Doctor>().HasData(
                 new Doctor
                 {
@@ -298,7 +301,7 @@ namespace DigitalPrescriptionProject.Data
                     CreatedAt = new DateTime(2026, 5, 1),
                     ImagePath = "/Images/PatientsImage/patient12.jpg"
                 }
-                
+
             );
             modelBuilder.Entity<Doctor>()
                 .HasOne<ApplicationUser>()
@@ -318,9 +321,35 @@ namespace DigitalPrescriptionProject.Data
                 .HasForeignKey(a => a.UserId)
                 .OnDelete(DeleteBehavior.SetNull);
 
+
+
             modelBuilder.Entity<Patient>()
                 .HasIndex(a => a.UserId)
                 .IsUnique();
+
+
+
+            modelBuilder.Entity<PrescribedTest>()
+                .HasOne(t => t.TestResult)
+                .WithOne(r => r.PrescribedTest)
+                .HasForeignKey<TestResult>(
+                    r => r.PrescribedTestId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+
+            modelBuilder.Entity<MedicalDocument>()
+                .HasOne(d => d.Patient)
+                .WithMany(p => p.MedicalDocuments)
+                .HasForeignKey(d => d.PatientId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+
+            modelBuilder.Entity<MedicalDocument>()
+                .HasOne(d => d.Prescription)
+                .WithMany(p => p.MedicalDocuments)
+                .HasForeignKey(d => d.PrescriptionId)
+                .OnDelete(DeleteBehavior.NoAction);
         }
 
     }

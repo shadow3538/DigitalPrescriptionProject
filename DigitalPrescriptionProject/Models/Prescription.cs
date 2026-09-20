@@ -8,6 +8,10 @@ namespace DigitalPrescriptionProject.Models
         [Key]
         public int PrescriptionId { get; set; }
 
+        [NotMapped]
+        public string PrescriptionNumber =>
+            $"RX-{PrescriptionId:D6}";
+
         [DataType(DataType.Date)]
         [DisplayFormat(
             ApplyFormatInEditMode = true,
@@ -29,8 +33,9 @@ namespace DigitalPrescriptionProject.Models
 
         public Doctor? Doctor { get; set; }
 
-        public List<PrescriptionItem>? PrescriptionItems { get; set; } = new();
+        public List<PrescriptionItem> PrescriptionItems { get; set; } = new();
 
-        public List<PrescribedTest>? PrescribedTests { get; set; } = new();
+        public List<PrescribedTest> PrescribedTests { get; set; } = new();
+        public List<MedicalDocument> MedicalDocuments { get; set; } = new();
     }
 }

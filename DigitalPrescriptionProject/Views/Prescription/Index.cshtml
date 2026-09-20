@@ -89,8 +89,8 @@
                         <tr>
 
                             <th class="ps-4">
-                                Visit Date
-                            </th>
+    Prescription / Visit Date
+</th>
 
                             <th>
                                 Patient
@@ -144,21 +144,25 @@
 
                                     <td class="ps-4">
 
-                                        <div class="fw-semibold">
+    <div class="fw-bold text-primary">
+        @item.PrescriptionNumber
+    </div>
 
-                                            @item.VisitDate.ToString(
-                                                "dd MMM yyyy")
+    <div class="fw-semibold">
 
-                                        </div>
+        @item.VisitDate.ToString(
+            "dd MMM yyyy")
 
-                                        <small class="text-muted">
+    </div>
 
-                                            @item.VisitDate.ToString(
-                                                "dddd")
+    <small class="text-muted">
 
-                                        </small>
+        @item.VisitDate.ToString(
+            "dddd")
 
-                                    </td>
+    </small>
+
+</td>
 
                                     <td>
 

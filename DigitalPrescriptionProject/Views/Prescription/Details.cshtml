@@ -7,6 +7,27 @@
 <div class="container-fluid py-4">
 
 
+    <div class="prescription-print-header">
+
+        <div class="text-center border-bottom pb-3 mb-4">
+
+            <h1 class="fw-bold mb-1">
+                DIGITAL PRESCRIPTION
+            </h1>
+
+            <div class="text-muted">
+                Healthcare Management System
+            </div>
+
+            <div class="mt-2 fw-bold">
+                Prescription No:
+                @Model.PrescriptionNumber
+            </div>
+
+        </div>
+
+    </div>
+
 
     <div class="d-flex justify-content-between align-items-center mb-4">
 
@@ -27,14 +48,28 @@
         </div>
 
 
-        <div>
+
+        <div class="no-print">
+
+
+            <button type="button"
+                    class="btn btn-success"
+                    onclick="window.print()">
+
+                <i class="bi bi-printer me-1"></i>
+
+                Print / Save PDF
+
+            </button>
+
+
 
             @if (User.IsInRole("Admin") ||
                  User.IsInRole("Doctor"))
             {
                 <a asp-action="Edit"
                    asp-route-id="@Model.PrescriptionId"
-                   class="btn btn-primary">
+                   class="btn btn-primary ms-2">
 
                     <i class="bi bi-pencil-square me-1"></i>
 
@@ -79,17 +114,19 @@
             <div class="row g-4">
 
 
+
                 <div class="col-md-4">
 
                     <div class="text-muted small">
-                        Prescription Id
+                        Prescription Number
                     </div>
 
-                    <div class="fw-semibold">
-                        @Model.PrescriptionId
+                    <div class="fw-bold text-primary fs-5">
+                        @Model.PrescriptionNumber
                     </div>
 
                 </div>
+
 
 
                 <div class="col-md-4">
@@ -100,12 +137,12 @@
 
                     <div class="fw-semibold">
 
-                        @Model.VisitDate.ToString(
-                            "dd MMM yyyy")
+                        @Model.VisitDate.ToString("dd MMM yyyy")
 
                     </div>
 
                 </div>
+
 
 
                 <div class="col-md-4">
@@ -129,6 +166,7 @@
 
 
     <div class="row g-4 mb-4">
+
 
 
         <div class="col-md-6">
@@ -159,8 +197,7 @@
 
                         <div class="fw-semibold">
 
-                            @(Model.Patient?.FullName
-                              ?? "N/A")
+                            @(Model.Patient?.FullName ?? "N/A")
 
                         </div>
 
@@ -175,8 +212,7 @@
 
                         <div class="fw-semibold">
 
-                            @(Model.Patient?.Phone
-                              ?? "N/A")
+                            @(Model.Patient?.Phone ?? "N/A")
 
                         </div>
 
@@ -187,6 +223,7 @@
             </div>
 
         </div>
+
 
 
         <div class="col-md-6">
@@ -217,8 +254,7 @@
 
                         <div class="fw-semibold">
 
-                            @(Model.Doctor?.FullName
-                              ?? "N/A")
+                            @(Model.Doctor?.FullName ?? "N/A")
 
                         </div>
 
@@ -233,8 +269,7 @@
 
                         <div class="fw-semibold">
 
-                            @(Model.Doctor?.Phone
-                              ?? "N/A")
+                            @(Model.Doctor?.Phone ?? "N/A")
 
                         </div>
 
@@ -247,6 +282,7 @@
         </div>
 
     </div>
+
 
 
     <div class="card shadow-sm border-0 mb-4">
@@ -267,6 +303,7 @@
         <div class="card-body">
 
 
+
             <div class="mb-4">
 
                 <h6 class="text-muted">
@@ -275,8 +312,7 @@
 
                 <div class="p-3 bg-light rounded">
 
-                    @if (!string.IsNullOrWhiteSpace(
-                        Model.Diagnosis))
+                    @if (!string.IsNullOrWhiteSpace(Model.Diagnosis))
                     {
                         @Model.Diagnosis
                     }
@@ -292,6 +328,7 @@
             </div>
 
 
+
             <div>
 
                 <h6 class="text-muted">
@@ -300,8 +337,7 @@
 
                 <div class="p-3 bg-light rounded">
 
-                    @if (!string.IsNullOrWhiteSpace(
-                        Model.ClinicalNotes))
+                    @if (!string.IsNullOrWhiteSpace(Model.ClinicalNotes))
                     {
                         @Model.ClinicalNotes
                     }
@@ -319,6 +355,7 @@
         </div>
 
     </div>
+
 
 
     <div class="card shadow-sm border-0 mb-4">
@@ -351,9 +388,13 @@
                             <tr>
 
                                 <th>#</th>
+
                                 <th>Medicine</th>
+
                                 <th>Dosage</th>
+
                                 <th>Time</th>
+
                                 <th>Duration</th>
 
                             </tr>
@@ -368,9 +409,7 @@
                             }
 
 
-                            @foreach (
-                                var item
-                                in Model.PrescriptionItems)
+                            @foreach (var item in Model.PrescriptionItems)
                             {
 
                                 <tr>
@@ -440,126 +479,416 @@
 
 
 
-    <div class="card shadow-sm border-0 mb-4">
+<div class="card shadow-sm border-0 mb-4">
 
-        <div class="card-header bg-info text-white">
+    <div class="card-header bg-info text-white">
 
-            <h5 class="mb-0">
+        <h5 class="mb-0">
 
-                <i class="bi bi-clipboard2-check me-2"></i>
+            <i class="bi bi-clipboard2-check me-2"></i>
 
-                Prescribed Tests
+            Prescribed Tests
 
-            </h5>
-
-        </div>
-
-
-        <div class="card-body">
-
-            @if (Model.PrescribedTests != null &&
-                 Model.PrescribedTests.Any())
-            {
-
-                <div class="table-responsive">
-
-                    <table class="table table-hover align-middle mb-0">
-
-                        <thead class="table-light">
-
-                            <tr>
-
-                                <th>#</th>
-                                <th>Test Name</th>
-                                <th>Instruction</th>
-
-                            </tr>
-
-                        </thead>
-
-
-                        <tbody>
-
-                            @{
-                                var testCount = 1;
-                            }
-
-
-                            @foreach (
-                                var test
-                                in Model.PrescribedTests)
-                            {
-
-                                <tr>
-
-                                    <td>
-                                        @testCount
-                                    </td>
-
-
-                                    <td>
-
-                                        <span class="fw-semibold">
-
-                                            @test.TestName
-
-                                        </span>
-
-                                    </td>
-
-
-                                    <td>
-
-                                        @if (!string.IsNullOrWhiteSpace(
-                                            test.Instruction))
-                                        {
-                                            <span class="badge bg-info-subtle text-info-emphasis">
-
-                                                @test.Instruction
-
-                                            </span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-muted">
-                                                N/A
-                                            </span>
-                                        }
-
-                                    </td>
-
-                                </tr>
-
-                                testCount++;
-                            }
-
-                        </tbody>
-
-                    </table>
-
-                </div>
-
-            }
-            else
-            {
-
-                <div class="text-center py-4 text-muted">
-
-                    <i class="bi bi-clipboard-x fs-2 d-block mb-2"></i>
-
-                    No tests prescribed.
-
-                </div>
-
-            }
-
-        </div>
+        </h5>
 
     </div>
 
 
+    <div class="card-body">
 
-    <div class="d-flex justify-content-end gap-2">
+        @if (Model.PrescribedTests != null &&
+             Model.PrescribedTests.Any())
+        {
+
+            <div class="table-responsive">
+
+                <table class="table table-hover
+                              align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>#</th>
+
+                            <th>Test Name</th>
+
+                            <th>Instruction</th>
+
+                            <th>Result</th>
+
+                            <th>Report Date</th>
+
+                            <th class="text-end no-print">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @{
+                            var testCount = 1;
+                        }
+
+
+                        @foreach (
+                            var test
+                            in Model.PrescribedTests)
+                        {
+
+                            <tr>
+
+                                <td>
+                                    @testCount
+                                </td>
+
+
+                                <td>
+
+                                    <span class="fw-semibold">
+
+                                        @test.TestName
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @if (!string.IsNullOrWhiteSpace(
+                                        test.Instruction))
+                                    {
+                                        <span class="badge
+                                                     bg-info-subtle
+                                                     text-info-emphasis">
+
+                                            @test.Instruction
+
+                                        </span>
+                                    }
+                                    else
+                                    {
+                                        <span class="text-muted">
+                                            N/A
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <td>
+
+                                    @if (test.TestResult != null)
+                                    {
+                                        <div>
+
+                                            <span class="fw-bold
+                                                         text-success">
+
+                                                @test.TestResult.ResultValue
+
+                                            </span>
+
+                                            @if (!string.IsNullOrWhiteSpace(
+                                                test.TestResult.Unit))
+                                            {
+                                                <span class="text-muted">
+
+                                                    @test.TestResult.Unit
+
+                                                </span>
+                                            }
+
+                                        </div>
+
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            test.TestResult.ReferenceRange))
+                                        {
+                                            <small class="text-muted">
+
+                                                Ref:
+                                                @test.TestResult.ReferenceRange
+
+                                            </small>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <span class="badge bg-secondary">
+
+                                            Pending
+
+                                        </span>
+                                    }
+
+                                </td>
+
+
+
+                                <td>
+
+    @if (test.TestResult != null)
+    {
+        @Convert.ToDateTime(
+            test.TestResult.ReportDate
+        ).ToString("dd MMM yyyy")
+    }
+    else
+    {
+        <span class="text-muted">
+            —
+        </span>
+    }
+
+</td>
+
+
+                               
+
+                                <td class="text-end no-print">
+
+                                    @if (test.TestResult == null)
+                                    {
+                                        @if (User.IsInRole("Admin") ||
+                                             User.IsInRole("Doctor"))
+                                        {
+                                            <a asp-controller="TestResult"
+                                               asp-action="Create"
+                                               asp-route-prescribedTestId="@test.Id"
+                                               class="btn btn-sm
+                                                      btn-outline-primary">
+
+                                                <i class="bi bi-plus-circle me-1"></i>
+
+                                                Add Result
+
+                                            </a>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        @if (User.IsInRole("Admin") ||
+                                             User.IsInRole("Doctor"))
+                                        {
+                                            <a asp-controller="TestResult"
+                                               asp-action="Edit"
+                                               asp-route-id="@test.TestResult.TestResultId"
+                                               class="btn btn-sm
+                                                      btn-outline-warning">
+
+                                                <i class="bi bi-pencil me-1"></i>
+
+                                                Edit Result
+
+                                            </a>
+                                        }
+                                    }
+
+                                </td>
+
+                            </tr>
+
+                            testCount++;
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="text-center
+                        py-4
+                        text-muted">
+
+                <i class="bi bi-clipboard-x
+                          fs-2
+                          d-block
+                          mb-2"></i>
+
+                No tests prescribed.
+
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+
+<div class="card shadow-sm border-0 mb-4">
+
+    <div class="card-header bg-secondary text-white
+                d-flex justify-content-between
+                align-items-center">
+
+        <h5 class="mb-0">
+
+            <i class="bi bi-folder2-open me-2"></i>
+
+            Medical Documents
+
+        </h5>
+
+
+        @if (User.IsInRole("Admin") ||
+             User.IsInRole("Doctor") ||
+             User.IsInRole("Patient"))
+        {
+            <a asp-controller="MedicalDocument"
+               asp-action="Upload"
+               asp-route-patientId="@Model.PatientId"
+               asp-route-prescriptionId="@Model.PrescriptionId"
+               class="btn btn-light btn-sm">
+
+                <i class="bi bi-upload me-1"></i>
+
+                Upload Document
+
+            </a>
+        }
+
+    </div>
+
+
+    <div class="card-body">
+
+        @if (Model.MedicalDocuments != null &&
+             Model.MedicalDocuments.Any())
+        {
+
+            <div class="table-responsive">
+
+                <table class="table table-hover
+                              align-middle mb-0">
+
+                    <thead class="table-light">
+
+                        <tr>
+
+                            <th>
+                                Document
+                            </th>
+
+                            <th>
+                                Type
+                            </th>
+
+                            <th>
+                                Uploaded
+                            </th>
+
+                            <th class="text-end">
+                                Action
+                            </th>
+
+                        </tr>
+
+                    </thead>
+
+
+                    <tbody>
+
+                        @foreach (
+                            var document
+                            in Model.MedicalDocuments)
+                        {
+
+                            <tr>
+
+                                <td>
+
+                                    <div class="fw-semibold">
+
+                                        @document.OriginalFileName
+
+                                    </div>
+
+                                </td>
+
+
+                                <td>
+
+                                    <span class="badge bg-info-subtle
+                                                 text-info-emphasis">
+
+                                        @document.DocumentType
+
+                                    </span>
+
+                                </td>
+
+
+                                <td>
+
+                                    @document.UploadedAt
+                                        .ToString("dd MMM yyyy hh:mm tt")
+
+                                </td>
+
+
+                                <td class="text-end">
+
+                                    <a asp-controller="MedicalDocument"
+                                       asp-action="Download"
+                                       asp-route-id="@document.MedicalDocumentId"
+                                       class="btn btn-sm
+                                              btn-outline-primary">
+
+                                        <i class="bi bi-download me-1"></i>
+
+                                        Download
+
+                                    </a>
+
+                                </td>
+
+                            </tr>
+
+                        }
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        }
+        else
+        {
+
+            <div class="text-center
+                        text-muted py-4">
+
+                <i class="bi bi-folder-x fs-1
+                          d-block mb-2"></i>
+
+                No medical documents uploaded.
+
+            </div>
+
+        }
+
+    </div>
+
+</div>
+
+
+
+    <div class="d-flex justify-content-end gap-2 no-print">
 
         <a asp-action="Index"
            class="btn btn-outline-secondary">
@@ -590,3 +919,82 @@
     </div>
 
 </div>
+
+
+
+<style>
+
+    .prescription-print-header {
+        display: none;
+    }
+
+    @@media print {
+
+        @@page {
+            size: A4;
+            margin: 12mm;
+        }
+
+        html,
+        body {
+            background: #ffffff !important;
+            color: #000000 !important;
+        }
+
+        header,
+        footer,
+        .no-print {
+            display: none !important;
+        }
+
+        .app-main {
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .app-main > .container-fluid {
+            padding: 0 !important;
+            max-width: 100% !important;
+        }
+
+        .container-fluid.py-4 {
+            padding: 0 !important;
+        }
+
+        .prescription-print-header {
+            display: block !important;
+        }
+
+        .card {
+            box-shadow: none !important;
+        }
+
+        .table-responsive {
+            overflow: visible !important;
+        }
+
+        table {
+            width: 100% !important;
+        }
+
+        thead {
+            display: table-header-group;
+        }
+
+        tr {
+            break-inside: avoid;
+        }
+
+        .card,
+        .row {
+            break-inside: avoid;
+        }
+
+        a {
+            color: #000000 !important;
+            text-decoration: none !important;
+        }
+
+    }
+
+</style>

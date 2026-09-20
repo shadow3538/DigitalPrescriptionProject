@@ -17,6 +17,8 @@ namespace DigitalPrescriptionProject.Models
         public int PrescriptionId { get; set; }
 
         public Prescription? Prescription { get; set; }
+
+        public TestResult? TestResult { get; set; }
     }
 
     public enum TestName

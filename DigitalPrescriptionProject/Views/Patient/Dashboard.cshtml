@@ -1,0 +1,723 @@
+﻿@model DigitalPrescriptionProject.Models.ViewModels.PatientDashboardViewModel
+
+@{
+    ViewData["Title"] = "Patient Dashboard";
+}
+
+<div class="container-fluid py-4">
+
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-body p-4">
+
+            <div class="row align-items-center">
+
+          
+
+                <div class="col-auto">
+
+                    @if (!string.IsNullOrWhiteSpace(Model.PatientImage))
+                    {
+                        <img src="@Model.PatientImage"
+                             alt="@Model.PatientName"
+                             class="rounded-circle"
+                             width="90"
+                             height="90"
+                             style="object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div class="rounded-circle
+                                    bg-primary-subtle
+                                    text-primary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:90px;height:90px;">
+
+                            <i class="bi bi-person fs-1"></i>
+
+                        </div>
+                    }
+
+                </div>
+
+
+
+                <div class="col">
+
+                    <div class="text-muted small">
+                        Patient Dashboard
+                    </div>
+
+                    <h2 class="fw-bold mb-1">
+
+                        Welcome,
+                        @Model.PatientName
+
+                    </h2>
+
+                    <div class="text-muted">
+
+                        <span class="me-3">
+
+                            <i class="bi bi-person me-1"></i>
+
+                            Age: @Model.Age
+
+                        </span>
+
+
+                        <span>
+
+                            <i class="bi bi-gender-ambiguous me-1"></i>
+
+                            @Model.Gender
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+
+                <div class="col-auto">
+
+                    <a asp-controller="Patient"
+                       asp-action="Details"
+                       class="btn btn-outline-primary">
+
+                        <i class="bi bi-person-circle me-1"></i>
+
+                        My Profile
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="row g-4 mb-4">
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                Total Prescriptions
+
+                            </div>
+
+                            <h2 class="fw-bold text-primary mb-0">
+
+                                @Model.TotalPrescriptions
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="rounded-circle
+                                    bg-primary-subtle
+                                    text-primary
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:60px;height:60px;">
+
+                            <i class="bi bi-file-medical fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                Doctors Visited
+
+                            </div>
+
+                            <h2 class="fw-bold text-success mb-0">
+
+                                @Model.DoctorsVisited
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="rounded-circle
+                                    bg-success-subtle
+                                    text-success
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:60px;height:60px;">
+
+                            <i class="bi bi-person-badge fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                Medicines Prescribed
+
+                            </div>
+
+                            <h2 class="fw-bold text-danger mb-0">
+
+                                @Model.MedicinesPrescribed
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="rounded-circle
+                                    bg-danger-subtle
+                                    text-danger
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:60px;height:60px;">
+
+                            <i class="bi bi-capsule fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+        <div class="col-xl-3 col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-body p-4">
+
+                    <div class="d-flex
+                                justify-content-between
+                                align-items-center">
+
+                        <div>
+
+                            <div class="text-muted small mb-2">
+
+                                Tests Prescribed
+
+                            </div>
+
+                            <h2 class="fw-bold text-warning mb-0">
+
+                                @Model.TestsPrescribed
+
+                            </h2>
+
+                        </div>
+
+
+                        <div class="rounded-circle
+                                    bg-warning-subtle
+                                    text-warning
+                                    d-flex
+                                    align-items-center
+                                    justify-content-center"
+                             style="width:60px;height:60px;">
+
+                            <i class="bi bi-clipboard2-check fs-3"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="row g-4 mb-4">
+
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="bi bi-person-lines-fill me-2"></i>
+
+                        My Information
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body p-4">
+
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Full Name
+                        </div>
+
+                        <div class="fw-semibold">
+                            @Model.PatientName
+                        </div>
+
+                    </div>
+
+
+                    <div class="mb-3">
+
+                        <div class="text-muted small">
+                            Phone
+                        </div>
+
+                        <div class="fw-semibold">
+
+                            @Model.Phone
+
+                        </div>
+
+                    </div>
+
+
+                    <div>
+
+                        <div class="text-muted small">
+                            Email
+                        </div>
+
+                        <div class="fw-semibold">
+
+                            @(Model.Email ?? "N/A")
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <div class="col-md-6">
+
+            <div class="card border-0 shadow-sm h-100">
+
+                <div class="card-header bg-success text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="bi bi-calendar-check me-2"></i>
+
+                        Latest Visit
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body p-4">
+
+                    @if (Model.LatestVisitDate.HasValue)
+                    {
+                        <div class="text-center py-3">
+
+                            <i class="bi bi-calendar-heart
+                                      text-success"
+                               style="font-size:3rem;"></i>
+
+                            <h3 class="fw-bold mt-3 mb-1">
+
+                                @Model.LatestVisitDate.Value
+                                    .ToString("dd MMM yyyy")
+
+                            </h3>
+
+                            <p class="text-muted mb-0">
+
+                                Your latest prescription visit
+
+                            </p>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="text-center
+                                    text-muted py-4">
+
+                            <i class="bi bi-calendar-x fs-1
+                                      d-block mb-3"></i>
+
+                            <p class="mb-0">
+
+                                No visit history found.
+
+                            </p>
+
+                        </div>
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="card border-0 shadow-sm mb-4">
+
+        <div class="card-header bg-white">
+
+            <h5 class="mb-0 fw-bold">
+
+                <i class="bi bi-lightning-charge
+                          text-warning me-2"></i>
+
+                Quick Actions
+
+            </h5>
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div class="row g-3">
+
+
+                <!-- MY PRESCRIPTIONS -->
+
+                <div class="col-md-6">
+
+                    <a asp-controller="Prescription"
+                       asp-action="Index"
+                       class="text-decoration-none">
+
+                        <div class="border rounded-3
+                                    p-4 text-center h-100">
+
+                            <i class="bi bi-file-medical
+                                      text-primary fs-1"></i>
+
+                            <h6 class="fw-bold mt-3 mb-1">
+
+                                My Prescriptions
+
+                            </h6>
+
+                            <small class="text-muted">
+
+                                View all your prescriptions
+
+                            </small>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+
+
+                <!-- PROFILE -->
+
+                <div class="col-md-6">
+
+                    <a asp-controller="Patient"
+                       asp-action="Edit"
+                       class="text-decoration-none">
+
+                        <div class="border rounded-3
+                                    p-4 text-center h-100">
+
+                            <i class="bi bi-person-gear
+                                      text-success fs-1"></i>
+
+                            <h6 class="fw-bold mt-3 mb-1">
+
+                                Update Profile
+
+                            </h6>
+
+                            <small class="text-muted">
+
+                                Update your personal information
+
+                            </small>
+
+                        </div>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+ 
+
+    <div class="card border-0 shadow-sm">
+
+        <div class="card-header bg-white
+                    d-flex
+                    justify-content-between
+                    align-items-center">
+
+            <h5 class="mb-0 fw-bold">
+
+                <i class="bi bi-clock-history
+                          text-primary me-2"></i>
+
+                Recent Prescriptions
+
+            </h5>
+
+
+            <a asp-controller="Prescription"
+               asp-action="Index"
+               class="btn btn-sm btn-outline-primary">
+
+                View All
+
+            </a>
+
+        </div>
+
+
+        <div class="card-body p-0">
+
+            @if (Model.RecentPrescriptions.Any())
+            {
+
+                <div class="table-responsive">
+
+                    <table class="table table-hover
+                                  align-middle mb-0">
+
+                        <thead class="table-light">
+
+                            <tr>
+
+                                <th class="ps-4">
+                                    Prescription
+                                </th>
+
+                                <th>
+                                    Doctor
+                                </th>
+
+                                <th>
+                                    Diagnosis
+                                </th>
+
+                                <th>
+                                    Visit Date
+                                </th>
+
+                                <th class="text-end pe-4">
+                                    Action
+                                </th>
+
+                            </tr>
+
+                        </thead>
+
+
+                        <tbody>
+
+                            @foreach (
+                                var prescription
+                                in Model.RecentPrescriptions)
+                            {
+
+                                <tr>
+
+                                    <td class="ps-4">
+
+                                        <span class="fw-bold text-primary">
+
+                                            @prescription.PrescriptionNumber
+
+                                        </span>
+
+                                    </td>
+
+
+                                    <td>
+
+                                        Dr.
+                                        @(prescription.Doctor?.FullName
+                                          ?? "N/A")
+
+                                    </td>
+
+
+                                    <td>
+
+                                        @if (!string.IsNullOrWhiteSpace(
+                                            prescription.Diagnosis))
+                                        {
+                                            @prescription.Diagnosis
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted">
+                                                N/A
+                                            </span>
+                                        }
+
+                                    </td>
+
+
+                                    <td>
+
+                                        @prescription.VisitDate
+                                            .ToString("dd MMM yyyy")
+
+                                    </td>
+
+
+                                    <td class="text-end pe-4">
+
+                                        <a asp-controller="Prescription"
+                                           asp-action="Details"
+                                           asp-route-id="@prescription.PrescriptionId"
+                                           class="btn btn-sm
+                                                  btn-outline-primary">
+
+                                            <i class="bi bi-eye me-1"></i>
+
+                                            View
+
+                                        </a>
+
+                                    </td>
+
+                                </tr>
+
+                            }
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            }
+            else
+            {
+
+                <div class="text-center
+                            text-muted py-5">
+
+                    <i class="bi bi-file-earmark-x
+                              fs-1 d-block mb-3"></i>
+
+                    <h6 class="fw-bold">
+                        No prescriptions yet
+                    </h6>
+
+                    <p class="mb-0">
+
+                        Your prescriptions will appear here.
+
+                    </p>
+
+                </div>
+
+            }
+
+        </div>
+
+    </div>
+
+</div>

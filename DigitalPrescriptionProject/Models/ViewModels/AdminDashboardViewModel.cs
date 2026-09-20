@@ -1,4 +1,6 @@
-﻿namespace DigitalPrescriptionProject.Models.ViewModels
+﻿using DigitalPrescriptionProject.Models;
+
+namespace DigitalPrescriptionProject.Models.ViewModels
 {
     public class AdminDashboardViewModel
     {
@@ -13,5 +15,12 @@
         public int TotalPrescriptions { get; set; }
         public int ActivePrescriptions { get; set; }
         public int DeletedPrescriptions { get; set; }
+
+        public int TodayPrescriptions { get; set; }
+
+        public int ThisMonthPrescriptions { get; set; }
+
+        public List<Prescription> RecentPrescriptions { get; set; }
+            = new();
     }
 }

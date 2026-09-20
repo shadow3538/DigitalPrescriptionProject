@@ -1,0 +1,229 @@
+﻿@model DigitalPrescriptionProject.Models.ViewModels.MedicalDocumentUploadViewModel
+
+@{
+    ViewData["Title"] = "Upload Medical Document";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-7">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-primary text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="bi bi-file-earmark-arrow-up me-2"></i>
+
+                        Upload Medical Document
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body p-4">
+
+
+                    <div class="alert alert-light border">
+
+                        <div class="mb-2">
+
+                            <strong>
+                                Patient:
+                            </strong>
+
+                            @ViewBag.PatientName
+
+                        </div>
+
+
+                        @if (ViewBag.PrescriptionNumber != null)
+                        {
+                            <div>
+
+                                <strong>
+                                    Prescription:
+                                </strong>
+
+                                @ViewBag.PrescriptionNumber
+
+                            </div>
+                        }
+
+                    </div>
+
+
+                    <form asp-action="Upload"
+                          method="post"
+                          enctype="multipart/form-data">
+
+                        <input type="hidden"
+                               asp-for="PatientId" />
+
+                        <input type="hidden"
+                               asp-for="PrescriptionId" />
+
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+                            <label asp-for="DocumentType"
+                                   class="form-label">
+
+                                Document Type
+
+                            </label>
+
+
+                            <select asp-for="DocumentType"
+                                    class="form-select">
+
+                                <option value="">
+                                    -- Select Document Type --
+                                </option>
+
+                                <option value="Blood Report">
+                                    Blood Report
+                                </option>
+
+                                <option value="X-Ray">
+                                    X-Ray
+                                </option>
+
+                                <option value="MRI">
+                                    MRI
+                                </option>
+
+                                <option value="CT Scan">
+                                    CT Scan
+                                </option>
+
+                                <option value="Ultrasound">
+                                    Ultrasound
+                                </option>
+
+                                <option value="Prescription">
+                                    Prescription
+                                </option>
+
+                                <option value="Discharge Summary">
+                                    Discharge Summary
+                                </option>
+
+                                <option value="Other">
+                                    Other
+                                </option>
+
+                            </select>
+
+
+                            <span asp-validation-for="DocumentType"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+                            <label asp-for="File"
+                                   class="form-label">
+
+                                Select File
+
+                            </label>
+
+
+                            <input asp-for="File"
+                                   type="file"
+                                   class="form-control"
+                                   accept=".pdf,.jpg,.jpeg,.png,.webp" />
+
+
+                            <div class="form-text">
+
+                                Allowed:
+                                PDF, JPG, JPEG, PNG, WEBP.
+                                Maximum size: 10 MB.
+
+                            </div>
+
+
+                            <span asp-validation-for="File"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="d-flex
+                                    justify-content-end
+                                    gap-2
+                                    mt-4">
+
+                            @if (Model.PrescriptionId.HasValue)
+                            {
+                                <a asp-controller="Prescription"
+                                   asp-action="Details"
+                                   asp-route-id="@Model.PrescriptionId"
+                                   class="btn btn-outline-secondary">
+
+                                    Cancel
+
+                                </a>
+                            }
+                            else
+                            {
+                                <a asp-controller="Patient"
+                                   asp-action="Details"
+                                   asp-route-id="@Model.PatientId"
+                                   class="btn btn-outline-secondary">
+
+                                    Cancel
+
+                                </a>
+                            }
+
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+
+                                <i class="bi bi-upload me-1"></i>
+
+                                Upload Document
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}

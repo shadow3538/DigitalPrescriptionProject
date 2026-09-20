@@ -4,6 +4,7 @@ using DigitalPrescriptionProject.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DigitalPrescriptionProject.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260920174818_AddTestResult")]
+    partial class AddTestResult
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -290,51 +293,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                             Phone = "01811111111",
                             Speciality = 15
                         });
-                });
-
-            modelBuilder.Entity("DigitalPrescriptionProject.Models.MedicalDocument", b =>
-                {
-                    b.Property<int>("MedicalDocumentId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MedicalDocumentId"));
-
-                    b.Property<string>("DocumentType")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("FilePath")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("OriginalFileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("PatientId")
-                        .HasColumnType("int");
-
-                    b.Property<int?>("PrescriptionId")
-                        .HasColumnType("int");
-
-                    b.Property<string>("StoredFileName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("UploadedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("UploadedByUserId")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("MedicalDocumentId");
-
-                    b.HasIndex("PatientId");
-
-                    b.HasIndex("PrescriptionId");
-
-                    b.ToTable("MedicalDocuments");
                 });
 
             modelBuilder.Entity("DigitalPrescriptionProject.Models.Patient", b =>
@@ -793,24 +751,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
                 });
 
-            modelBuilder.Entity("DigitalPrescriptionProject.Models.MedicalDocument", b =>
-                {
-                    b.HasOne("DigitalPrescriptionProject.Models.Patient", "Patient")
-                        .WithMany("MedicalDocuments")
-                        .HasForeignKey("PatientId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DigitalPrescriptionProject.Models.Prescription", "Prescription")
-                        .WithMany("MedicalDocuments")
-                        .HasForeignKey("PrescriptionId")
-                        .OnDelete(DeleteBehavior.NoAction);
-
-                    b.Navigation("Patient");
-
-                    b.Navigation("Prescription");
-                });
-
             modelBuilder.Entity("DigitalPrescriptionProject.Models.Patient", b =>
                 {
                     b.HasOne("DigitalPrescriptionProject.Data.ApplicationUser", null)
@@ -929,8 +869,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
 
             modelBuilder.Entity("DigitalPrescriptionProject.Models.Patient", b =>
                 {
-                    b.Navigation("MedicalDocuments");
-
                     b.Navigation("Prescriptions");
                 });
 
@@ -941,8 +879,6 @@ namespace DigitalPrescriptionProject.Data.Migrations
 
             modelBuilder.Entity("DigitalPrescriptionProject.Models.Prescription", b =>
                 {
-                    b.Navigation("MedicalDocuments");
-
                     b.Navigation("PrescribedTests");
 
                     b.Navigation("PrescriptionItems");

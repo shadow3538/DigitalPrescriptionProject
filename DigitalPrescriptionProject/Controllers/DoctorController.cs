@@ -23,6 +23,105 @@ public class DoctorController : Controller
 
 
 
+    [Authorize(Roles = "Doctor")]
+    public async Task<IActionResult> Dashboard()
+    {
+        var user = await _userManager.GetUserAsync(User);
+
+        if (user == null)
+            return Forbid();
+
+
+        var doctor = await _context.Doctors
+            .FirstOrDefaultAsync(d =>
+                d.UserId == user.Id &&
+                !d.IsDeleted);
+
+
+        if (doctor == null)
+            return Forbid();
+
+
+
+        var prescriptions =
+            _context.Prescriptions
+                .Where(p =>
+                    p.DoctorId == doctor.DoctorId);
+
+
+        var totalPrescriptions =
+            await prescriptions.CountAsync();
+
+
+        var totalPatients =
+            await prescriptions
+                .Select(p => p.PatientId)
+                .Distinct()
+                .CountAsync();
+
+
+        var today = DateTime.Today;
+
+        var tomorrow = today.AddDays(1);
+
+        var todayPrescriptions =
+            await prescriptions
+                .CountAsync(p =>
+                    p.VisitDate >= today &&
+                    p.VisitDate < tomorrow);
+
+
+        var recentPrescriptions =
+            await prescriptions
+
+                .Include(p => p.Patient)
+
+                .OrderByDescending(
+                    p => p.VisitDate)
+
+                .ThenByDescending(
+                    p => p.PrescriptionId)
+
+                .Take(5)
+
+                .ToListAsync();
+
+
+        var model =
+            new DoctorDashboardViewModel
+            {
+                DoctorName =
+                    doctor.FullName,
+
+                DoctorImage =
+                    doctor.ImagePath,
+
+                Speciality =
+                    doctor.Speciality.ToString(),
+
+                TotalPatients =
+                    totalPatients,
+
+                TotalPrescriptions =
+                    totalPrescriptions,
+
+                TodayPrescriptions =
+                    todayPrescriptions,
+
+                RecentPrescriptions =
+                    recentPrescriptions
+            };
+
+
+        return View(model);
+    }
+
+
+
+
+
+
+
     public async Task<IActionResult> Index(
     string? search,
     int page = 1,
