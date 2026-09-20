@@ -23,8 +23,22 @@ public class DoctorController : Controller
 
 
 
-    public async Task<IActionResult> Index()
+    public async Task<IActionResult> Index(
+    string? search,
+    int page = 1,
+    int pageSize = 6)
     {
+        if (page < 1)
+            page = 1;
+
+        if (pageSize < 1)
+            pageSize = 6;
+
+
+        IQueryable<Doctor> query =
+            _context.Doctors
+                .Where(d => !d.IsDeleted);
+
 
         if (User.IsInRole("Doctor"))
         {
@@ -33,21 +47,48 @@ public class DoctorController : Controller
             if (user == null)
                 return Forbid();
 
-            var doctors = await _context.Doctors
-                .Where(d =>
-                    d.UserId == user.Id &&
-                    !d.IsDeleted)
-                .ToListAsync();
-
-            return View(doctors);
+            query = query.Where(d => d.UserId == user.Id);
         }
 
 
-        var allDoctors = await _context.Doctors
-            .Where(d => !d.IsDeleted)
-            .ToListAsync();
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            search = search.Trim();
 
-        return View(allDoctors);
+            query = query.Where(d =>
+                d.FirstName.Contains(search) ||
+                d.LastName.Contains(search) ||
+                d.Phone.Contains(search) ||
+                (d.Email != null &&
+                 d.Email.Contains(search)));
+        }
+
+
+        var totalDoctors =
+            await query.CountAsync();
+
+
+        var doctors =
+            await query
+                .OrderBy(d => d.DoctorId)
+                .Skip((page - 1) * pageSize)
+                .Take(pageSize)
+                .ToListAsync();
+
+
+        ViewBag.Search = search;
+
+        ViewBag.CurrentPage = page;
+
+        ViewBag.PageSize = pageSize;
+
+        ViewBag.TotalPages =
+            (int)Math.Ceiling(
+                (double)totalDoctors /
+                pageSize);
+
+
+        return View(doctors);
     }
 
 

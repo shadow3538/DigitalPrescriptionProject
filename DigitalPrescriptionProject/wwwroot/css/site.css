@@ -342,15 +342,14 @@ body {
             transform: translateY(-3px);
             box-shadow: 0 6px 18px rgba(0, 0, 0, 0.07);
         }
+}
 
-
-    .privacy-icon {
-        width: 48px;
-        height: 48px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        border-radius: 12px;
-        font-size: 21px;
-    }
+.privacy-icon {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    font-size: 21px;
 }

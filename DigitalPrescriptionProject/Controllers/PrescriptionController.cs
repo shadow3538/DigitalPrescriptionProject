@@ -62,6 +62,66 @@ namespace DigitalPrescriptionProject.Controllers
 
 
 
+
+
+        [Authorize(Roles = "Admin,Doctor,Patient")]
+        public async Task<IActionResult> FollowUp(int patientId)
+        {
+            var patient =
+                await _context.Patients
+                    .FirstOrDefaultAsync(
+                        p => p.PatientId == patientId &&
+                             !p.IsDeleted);
+
+            if (patient == null)
+                return NotFound();
+
+
+            if (User.IsInRole("Patient"))
+            {
+                var currentPatient =
+                    await GetCurrentPatientAsync();
+
+                if (currentPatient == null ||
+                    currentPatient.PatientId != patientId)
+                {
+                    return Forbid();
+                }
+            }
+
+
+            var prescriptions =
+                await _context.Prescriptions
+
+                    .Include(p => p.Doctor)
+
+                    .Include(p => p.PrescriptionItems)
+
+                    .Include(p => p.PrescribedTests)
+
+                    .Where(p =>
+                        p.PatientId == patientId)
+
+                    .OrderByDescending(
+                        p => p.VisitDate)
+
+                    .ToListAsync();
+
+
+            ViewBag.PatientName =
+                patient.FullName;
+
+            ViewBag.PatientId =
+                patient.PatientId;
+
+
+            return View(prescriptions);
+        }
+
+
+
+
+
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
