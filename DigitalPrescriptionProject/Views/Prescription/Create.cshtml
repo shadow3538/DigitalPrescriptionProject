@@ -6,7 +6,10 @@
 
 <div class="container-fluid py-3">
 
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex
+                justify-content-between
+                align-items-center
+                mb-3">
 
         <h2 class="mb-0">
             Create Prescription
@@ -19,6 +22,7 @@
           method="post">
 
         @Html.AntiForgeryToken()
+
 
         <div asp-validation-summary="All"
              class="text-danger mb-3">
@@ -41,6 +45,7 @@
                 <div class="row">
 
 
+
                     <div class="col-md-6 mb-3">
 
                         <label asp-for="VisitDate"
@@ -57,11 +62,14 @@
                     </div>
 
 
+
                     <div class="col-md-6 mb-3">
 
                         <label asp-for="PatientId"
                                class="form-label">
+
                             Patient
+
                         </label>
 
                         <select asp-for="PatientId"
@@ -81,13 +89,16 @@
                     </div>
 
 
+
                     @if (User.IsInRole("Admin"))
                     {
                         <div class="col-md-6 mb-3">
 
                             <label asp-for="DoctorId"
                                    class="form-label">
+
                                 Doctor
+
                             </label>
 
                             <select asp-for="DoctorId"
@@ -124,6 +135,7 @@
                     </div>
 
 
+
                     <div class="col-12 mb-2">
 
                         <label asp-for="ClinicalNotes"
@@ -132,8 +144,7 @@
 
                         <textarea asp-for="ClinicalNotes"
                                   class="form-control"
-                                  rows="3">
-                        </textarea>
+                                  rows="3"></textarea>
 
                         <span asp-validation-for="ClinicalNotes"
                               class="text-danger">
@@ -149,63 +160,55 @@
 
 
 
-        <div class="row g-4">
+        <div id="prescriptionCollections">
 
+            @if ((Model.PrescriptionItems != null &&
+                  Model.PrescriptionItems.Any()) ||
 
-            <div class="col-12 col-lg-6">
+                 (Model.PrescribedTests != null &&
+                  Model.PrescribedTests.Any()))
+            {
+                <!--
+                    Validation error হলে
+                    posted data সরাসরি render হবে
+                -->
 
-                <div class="card h-100">
+                <partial name="_PrescriptionCollections"
+                         model="Model" />
+            }
+            else
+            {
+                <div class="text-center py-5">
 
-                    <div class="card-header">
+                    <div class="spinner-border
+                                text-primary"
+                         role="status">
 
-                        <h5 class="mb-0">
-                            Prescribed Tests
-                        </h5>
-
-                    </div>
-
-                    <div class="card-body">
-
-                        <partial name="_PrescriptedTestData"
-                                 model="Model" />
-
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <div class="col-12 col-lg-6">
-
-                <div class="card h-100">
-
-                    <div class="card-header">
-
-                        <h5 class="mb-0">
-                            Medicines
-                        </h5>
+                        <span class="visually-hidden">
+                            Loading...
+                        </span>
 
                     </div>
 
-                    <div class="card-body">
+                    <div class="text-muted mt-2">
 
-                        <partial name="_PrescriptionItemData"
-                                 model="Model" />
+                        Loading prescription items...
 
                     </div>
 
                 </div>
-
-            </div>
+            }
 
         </div>
+
 
 
         <div class="mt-4 mb-3">
 
             <button type="submit"
                     class="btn btn-outline-primary">
+
+                <i class="bi bi-check-circle me-1"></i>
 
                 Create Prescription
 
@@ -214,6 +217,8 @@
 
             <a asp-action="Index"
                class="btn btn-outline-secondary ms-2">
+
+                <i class="bi bi-arrow-left me-1"></i>
 
                 Back to List
 
@@ -226,11 +231,155 @@
 </div>
 
 
+
 @section Scripts {
 
     @{
         await Html.RenderPartialAsync(
             "_ValidationScriptsPartial");
     }
+
+
+
+    @if ((Model.PrescriptionItems == null ||
+          !Model.PrescriptionItems.Any()) &&
+
+         (Model.PrescribedTests == null ||
+          !Model.PrescribedTests.Any()))
+    {
+        <a id="loadPrescriptionCollections"
+           href="@Url.Action(
+               "LoadPrescriptionCollections",
+               "Prescription")"
+           data-ajax="true"
+           data-ajax-method="GET"
+           data-ajax-update="#prescriptionCollections"
+           class="d-none">
+
+            Load
+
+        </a>
+    }
+
+
+    <script>
+
+        $(document).ready(function () {
+
+
+            var loader =
+                $("#loadPrescriptionCollections");
+
+
+            if (loader.length) {
+
+                loader.trigger("click");
+
+            }
+
+        });
+
+
+
+        $(document).on(
+            "click",
+            ".js-prescription-operation",
+            function () {
+
+                var button =
+                    $(this);
+
+                var form =
+                    button.closest("form");
+
+
+                var operationName =
+                    button.data("operation");
+
+
+                var operationValue =
+                    button.data("value");
+
+
+                if (!form.length) {
+
+                    console.error(
+                        "Prescription form not found.");
+
+                    return;
+
+                }
+
+
+                var formData =
+                    form.serialize();
+
+
+                formData +=
+                    "&" +
+                    encodeURIComponent(
+                        operationName) +
+                    "=" +
+                    encodeURIComponent(
+                        operationValue);
+
+
+                button.prop(
+                    "disabled",
+                    true);
+
+
+
+                $.ajax({
+                    url:
+                        form.attr("action"),
+                    type:
+                        "POST",
+                    data:
+                        formData,
+                    success: function (html) 
+                    { 
+                        $("#prescriptionCollections")
+                                .html(html);
+
+
+                            if ($.validator &&
+                                $.validator.unobtrusive)
+                            {
+                                $.validator.unobtrusive
+                                    .parse(
+                                        "#prescriptionCollections");
+                            }
+
+                        },
+
+
+                    error:
+                        function (xhr) {
+
+                            console.error(
+                                xhr.responseText);
+
+                            alert(
+                                "Could not update prescription items."
+                            );
+
+                        },
+
+
+                    complete:
+                        function () {
+
+                            button.prop(
+                                "disabled",
+                                false);
+
+                        }
+
+                });
+
+            });
+
+    </script>
 
 }

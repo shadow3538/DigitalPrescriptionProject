@@ -2,28 +2,37 @@
 
 <div class="table-responsive">
 
-    <table class="table table-bordered table-sm align-middle">
+    <table class="table table-bordered
+                  table-sm
+                  align-middle">
 
         <thead>
 
             <tr>
 
+
                 <th style="width: 90px;">
 
-                    <button type="submit"
-                            name="testOperation"
-                            value="add"
-                            class="btn btn-outline-primary btn-sm">
+                    <button type="button"
+                            class="btn btn-outline-primary
+                                   btn-sm
+                                   js-prescription-operation"
+                            data-operation="testOperation"
+                            data-value="add">
 
-                        + Add
+                        <i class="bi bi-plus-circle me-1"></i>
+
+                        Add
 
                     </button>
 
                 </th>
 
+
                 <th>
                     Test Name
                 </th>
+
 
                 <th>
                     Instruction
@@ -43,14 +52,17 @@
             {
                 <tr>
 
-                    <!-- Delete -->
 
                     <td>
 
-                        <button type="submit"
-                                name="testOperation"
-                                value="delete-@i"
-                                class="btn btn-outline-danger btn-sm">
+                        <button type="button"
+                                class="btn btn-outline-danger
+                                       btn-sm
+                                       js-prescription-operation"
+                                data-operation="testOperation"
+                                data-value="delete-@i">
+
+                            <i class="bi bi-trash me-1"></i>
 
                             Delete
 
@@ -59,14 +71,20 @@
                     </td>
 
 
+
                     <td>
 
-                        <input asp-for="PrescribedTests[i].Id"
+                        <input asp-for="
+                            PrescribedTests[i].Id"
                                type="hidden" />
 
-                        <select asp-for="PrescribedTests[i].TestName"
-                                asp-items="@Html.GetEnumSelectList<TestName>()"
-                                class="form-select form-select-sm">
+
+                        <select asp-for="
+                            PrescribedTests[i].TestName"
+                                asp-items="@Html
+                                    .GetEnumSelectList<TestName>()"
+                                class="form-select
+                                       form-select-sm">
 
                             <option value="">
                                 Select Test
@@ -74,7 +92,9 @@
 
                         </select>
 
-                        <span asp-validation-for="PrescribedTests[i].TestName"
+
+                        <span asp-validation-for="
+                            PrescribedTests[i].TestName"
                               class="text-danger">
                         </span>
 
@@ -83,10 +103,14 @@
 
                     <td>
 
-                        <input asp-for="PrescribedTests[i].Instruction"
-                               class="form-control form-control-sm" />
+                        <input asp-for="
+                            PrescribedTests[i].Instruction"
+                               class="form-control
+                                      form-control-sm" />
 
-                        <span asp-validation-for="PrescribedTests[i].Instruction"
+
+                        <span asp-validation-for="
+                            PrescribedTests[i].Instruction"
                               class="text-danger">
                         </span>
 

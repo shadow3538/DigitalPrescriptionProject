@@ -1,0 +1,62 @@
+﻿@model DigitalPrescriptionProject.Models.Prescription
+
+<div class="row g-4">
+
+
+    <div class="col-12 col-lg-6">
+
+        <div class="card h-100">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-clipboard2-check me-2"></i>
+
+                    Prescribed Tests
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <partial name="_PrescriptedTestData"
+                         model="Model" />
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <div class="col-12 col-lg-6">
+
+        <div class="card h-100">
+
+            <div class="card-header">
+
+                <h5 class="mb-0">
+
+                    <i class="bi bi-capsule me-2"></i>
+
+                    Medicines
+
+                </h5>
+
+            </div>
+
+            <div class="card-body">
+
+                <partial name="_PrescriptionItemData"
+                         model="Model" />
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
