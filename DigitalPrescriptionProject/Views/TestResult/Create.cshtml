@@ -1,0 +1,211 @@
+﻿@model DigitalPrescriptionProject.Models.TestResult
+
+@{
+    ViewData["Title"] = "Add Test Result";
+}
+
+<div class="container-fluid py-4">
+
+    <div class="row justify-content-center">
+
+        <div class="col-lg-8">
+
+            <div class="card border-0 shadow-sm">
+
+                <div class="card-header bg-info text-white">
+
+                    <h5 class="mb-0">
+
+                        <i class="bi bi-clipboard2-pulse me-2"></i>
+
+                        Add Test Result
+
+                    </h5>
+
+                </div>
+
+
+                <div class="card-body p-4">
+
+                    <div class="alert alert-light border mb-4">
+
+                        <div class="mb-2">
+
+                            <strong>
+                                Test:
+                            </strong>
+
+                            @Model.PrescribedTest?.TestName
+
+                        </div>
+
+                        <div>
+
+                            <strong>
+                                Patient:
+                            </strong>
+
+                            @(
+                                Model.PrescribedTest?
+                                    .Prescription?
+                                    .Patient?
+                                    .FullName
+                                ?? "N/A"
+                            )
+
+                        </div>
+
+                    </div>
+
+
+                    <form asp-action="Create"
+                          method="post">
+
+                        <input type="hidden"
+                               asp-for="PrescribedTestId" />
+
+
+                        <div asp-validation-summary="ModelOnly"
+                             class="text-danger mb-3">
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+                            <label asp-for="ResultValue"
+                                   class="form-label">
+
+                                Result
+
+                            </label>
+
+                            <textarea asp-for="ResultValue"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Enter test result">
+                            </textarea>
+
+                            <span asp-validation-for="ResultValue"
+                                  class="text-danger">
+                            </span>
+
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+                            <label asp-for="Unit"
+                                   class="form-label">
+
+                                Unit
+
+                            </label>
+
+                            <input asp-for="Unit"
+                                   class="form-control"
+                                   placeholder="Example: mg/dL, g/dL" />
+
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+                            <label asp-for="ReferenceRange"
+                                   class="form-label">
+
+                                Reference Range
+
+                            </label>
+
+                            <input asp-for="ReferenceRange"
+                                   class="form-control"
+                                   placeholder="Example: 13 - 17" />
+
+                        </div>
+
+
+
+                        <div class="mb-3">
+
+                            <label asp-for="ReportDate"
+                                   class="form-label">
+
+                                Report Date
+
+                            </label>
+
+                            <input asp-for="ReportDate"
+                                   type="date"
+                                   class="form-control" />
+
+                        </div>
+
+
+
+                        <div class="mb-4">
+
+                            <label asp-for="Remarks"
+                                   class="form-label">
+
+                                Remarks
+
+                            </label>
+
+                            <textarea asp-for="Remarks"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Optional remarks">
+                            </textarea>
+
+                        </div>
+
+
+
+                        <div class="d-flex
+                                    justify-content-end
+                                    gap-2">
+
+                            <a asp-controller="Prescription"
+                               asp-action="Details"
+                               asp-route-id="@Model.PrescribedTest?.PrescriptionId"
+                               class="btn btn-outline-secondary">
+
+                                Cancel
+
+                            </a>
+
+
+                            <button type="submit"
+                                    class="btn btn-primary">
+
+                                <i class="bi bi-check-circle me-1"></i>
+
+                                Save Result
+
+                            </button>
+
+                        </div>
+
+                    </form>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+@section Scripts {
+
+    @{
+        await Html.RenderPartialAsync(
+            "_ValidationScriptsPartial");
+    }
+
+}
