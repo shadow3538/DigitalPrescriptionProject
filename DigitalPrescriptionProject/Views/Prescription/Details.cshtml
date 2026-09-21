@@ -638,8 +638,7 @@
     @if (test.TestResult != null)
     {
         @Convert.ToDateTime(
-            test.TestResult.ReportDate
-        ).ToString("dd MMM yyyy")
+            test.TestResult.ReportDate)
     }
     else
     {
@@ -835,7 +834,6 @@
                                 <td>
 
                                     @document.UploadedAt
-                                        .ToString("dd MMM yyyy hh:mm tt")
 
                                 </td>
 

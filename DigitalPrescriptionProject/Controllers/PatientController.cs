@@ -12,9 +12,7 @@ public class PatientController : Controller
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public PatientController(
-        ApplicationDbContext context,
-        UserManager<ApplicationUser> userManager)
+    public PatientController( ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _userManager = userManager;
@@ -43,28 +41,23 @@ public class PatientController : Controller
 
 
 
-        var prescriptions =
-            _context.Prescriptions
+        var prescriptions = _context.Prescriptions
                 .Where(p =>
                     p.PatientId == patient.PatientId);
 
 
 
-        var totalPrescriptions =
-            await prescriptions.CountAsync();
+        var totalPrescriptions = await prescriptions.CountAsync();
 
 
 
-        var doctorsVisited =
-            await prescriptions
+        var doctorsVisited =  await prescriptions
                 .Select(p => p.DoctorId)
                 .Distinct()
                 .CountAsync();
 
 
-
-        var medicinesPrescribed =
-            await _context.PrescriptionItems
+        var medicinesPrescribed = await _context.PrescriptionItems
                 .Where(item =>
                     item.Prescription != null &&
                     item.Prescription.PatientId ==
@@ -72,8 +65,7 @@ public class PatientController : Controller
                 .CountAsync();
 
 
-        var testsPrescribed =
-            await _context.PrescribedTests
+        var testsPrescribed = await _context.PrescribedTests
                 .Where(test =>
                     test.Prescription != null &&
                     test.Prescription.PatientId ==
@@ -81,71 +73,37 @@ public class PatientController : Controller
                 .CountAsync();
 
 
-
-        var latestVisitDate =
-            await prescriptions
+        var latestVisitDate =  await prescriptions
                 .Select(p => (DateTime?)p.VisitDate)
                 .OrderByDescending(d => d)
                 .FirstOrDefaultAsync();
 
 
 
-        var recentPrescriptions =
-            await prescriptions
-
+        var recentPrescriptions = await prescriptions
                 .Include(p => p.Doctor)
-
-                .OrderByDescending(
-                    p => p.VisitDate)
-
-                .ThenByDescending(
-                    p => p.PrescriptionId)
-
+                .OrderByDescending( p => p.VisitDate)
+                .ThenByDescending( p => p.PrescriptionId)
                 .Take(5)
-
                 .ToListAsync();
 
 
         var model =
             new PatientDashboardViewModel
             {
-                PatientName =
-                    patient.FullName,
-
-                PatientImage =
-                    patient.ImagePath,
-
-                Age =
-                    patient.Age,
-
-                Gender =
-                    patient.Gender,
-
-                Phone =
-                    patient.Phone,
-
-                Email =
-                    patient.Email,
-
-                TotalPrescriptions =
-                    totalPrescriptions,
-
-                DoctorsVisited =
-                    doctorsVisited,
-
-                MedicinesPrescribed =
-                    medicinesPrescribed,
-
-                TestsPrescribed =
-                    testsPrescribed,
-
-                LatestVisitDate =
-                    latestVisitDate,
-
-                RecentPrescriptions =
-                    recentPrescriptions
+                PatientName = patient.FullName,
+                PatientImage = patient.ImagePath,
+                Age = patient.Age,
+                Gender =  patient.Gender,
+                Phone = patient.Phone,
+                Email =  patient.Email,
+                TotalPrescriptions = totalPrescriptions,
+                DoctorsVisited = doctorsVisited,
+                MedicinesPrescribed = medicinesPrescribed,
+                TestsPrescribed = testsPrescribed,
+                LatestVisitDate = latestVisitDate,
+                RecentPrescriptions =  recentPrescriptions
             };
-
 
         return View(model);
     }
@@ -166,20 +124,17 @@ public class PatientController : Controller
         if (pageSize < 1)
             pageSize = 10;
 
-        IQueryable<Patient> query =
-            _context.Patients
+        IQueryable<Patient> query = _context.Patients
                 .Where(p => !p.IsDeleted);
 
         if (User.IsInRole("Patient"))
         {
-            var user =
-                await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
             if (user == null)
                 return Forbid();
 
-            query = query.Where(
-                p => p.UserId == user.Id);
+            query = query.Where( p => p.UserId == user.Id);
         }
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -194,11 +149,9 @@ public class PatientController : Controller
                  p.Email.Contains(search)));
         }
 
-        var totalPatients =
-            await query.CountAsync();
+        var totalPatients = await query.CountAsync();
 
-        var patients =
-            await query
+        var patients = await query
                 .OrderBy(p => p.PatientId)
                 .Skip((page - 1) * pageSize)
                 .Take(pageSize)
@@ -208,8 +161,7 @@ public class PatientController : Controller
         ViewBag.CurrentPage = page;
         ViewBag.PageSize = pageSize;
 
-        ViewBag.TotalPages =
-            (int)Math.Ceiling(
+        ViewBag.TotalPages = (int)Math.Ceiling(
                 (double)totalPatients /
                 pageSize);
 
@@ -222,11 +174,9 @@ public class PatientController : Controller
             return NotFound();
 
 
-        var patient =
-    await _context.Patients
+        var patient = await _context.Patients
         .Include(p => p.MedicalDocuments)
-        .FirstOrDefaultAsync(
-            p =>
+        .FirstOrDefaultAsync( p =>
                 p.PatientId == id &&
                 !p.IsDeleted);
 
@@ -236,11 +186,9 @@ public class PatientController : Controller
 
         if (User.IsInRole("Patient"))
         {
-            var user =
-                await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
-            if (user == null ||
-                patient.UserId != user.Id)
+            if (user == null || patient.UserId != user.Id)
             {
                 return Forbid();
             }
@@ -249,19 +197,21 @@ public class PatientController : Controller
         return View(patient);
     }
 
+
+
     [Authorize(Roles = "Admin")]
     public IActionResult Create()
     {
-        return View(
-            new CreatePatientViewModel());
+        return View( new CreatePatientViewModel());
     }
+
+
+
 
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin")]
-    public async Task<IActionResult> Create(
-        CreatePatientViewModel model,
-        [FromServices] IWebHostEnvironment env)
+    public async Task<IActionResult> Create( CreatePatientViewModel model, [FromServices] IWebHostEnvironment env)
     {
         if (!ModelState.IsValid)
             return View(model);
@@ -275,27 +225,19 @@ public class PatientController : Controller
             PhoneNumber = model.Phone
         };
 
-        var userResult =
-            await _userManager.CreateAsync(
-                user,
-                model.Password);
+        var userResult = await _userManager.CreateAsync( user, model.Password);
 
         if (!userResult.Succeeded)
         {
             foreach (var error in userResult.Errors)
             {
-                ModelState.AddModelError(
-                    string.Empty,
-                    error.Description);
+                ModelState.AddModelError( string.Empty, error.Description);
             }
 
             return View(model);
         }
 
-        var roleResult =
-            await _userManager.AddToRoleAsync(
-                user,
-                "Patient");
+        var roleResult = await _userManager.AddToRoleAsync( user, "Patient");
 
         if (!roleResult.Succeeded)
         {
@@ -303,9 +245,7 @@ public class PatientController : Controller
 
             foreach (var error in roleResult.Errors)
             {
-                ModelState.AddModelError(
-                    string.Empty,
-                    error.Description);
+                ModelState.AddModelError( string.Empty, error.Description);
             }
 
             return View(model);
@@ -335,9 +275,7 @@ public class PatientController : Controller
         {
             await _userManager.DeleteAsync(user);
 
-            ModelState.AddModelError(
-                string.Empty,
-                ex.Message);
+            ModelState.AddModelError( string.Empty, ex.Message);
 
             return View(model);
         }
@@ -358,16 +296,17 @@ public class PatientController : Controller
             nameof(Index));
     }
 
+
+
+
     [Authorize(Roles = "Admin,Patient")]
     public async Task<IActionResult> Edit(int? id)
     {
         if (id == null)
             return NotFound();
 
-        var patient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
+        var patient = await _context.Patients
+                .FirstOrDefaultAsync(p =>
                         p.PatientId == id &&
                         !p.IsDeleted);
 
@@ -376,8 +315,7 @@ public class PatientController : Controller
 
         if (User.IsInRole("Patient"))
         {
-            var user =
-                await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
             if (user == null ||
                 patient.UserId != user.Id)
@@ -389,21 +327,20 @@ public class PatientController : Controller
         return View(patient);
     }
 
+
+
+
     [HttpPost]
     [ValidateAntiForgeryToken]
     [Authorize(Roles = "Admin,Patient")]
-    public async Task<IActionResult> Edit(
-        int? id,
-        Patient patient,
+    public async Task<IActionResult> Edit( int? id, Patient patient,
         [FromServices] IWebHostEnvironment env)
     {
         if (id != patient.PatientId)
             return NotFound();
 
-        var existingPatient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
+        var existingPatient = await _context.Patients
+                .FirstOrDefaultAsync( p =>
                         p.PatientId ==
                         patient.PatientId &&
                         !p.IsDeleted);
@@ -413,11 +350,9 @@ public class PatientController : Controller
 
         if (User.IsInRole("Patient"))
         {
-            var user =
-                await _userManager.GetUserAsync(User);
+            var user = await _userManager.GetUserAsync(User);
 
-            if (user == null ||
-                existingPatient.UserId != user.Id)
+            if (user == null || existingPatient.UserId != user.Id)
             {
                 return Forbid();
             }
@@ -428,26 +363,15 @@ public class PatientController : Controller
 
         try
         {
-            existingPatient.FirstName =
-                patient.FirstName;
-
-            existingPatient.LastName =
-                patient.LastName;
-
-            existingPatient.Age =
-                patient.Age;
-
-            existingPatient.Phone =
-                patient.Phone;
-
-            existingPatient.Gender =
-                patient.Gender;
+            existingPatient.FirstName = patient.FirstName;
+            existingPatient.LastName = patient.LastName;
+            existingPatient.Age = patient.Age;
+            existingPatient.Phone = patient.Phone;
+            existingPatient.Gender = patient.Gender;
 
             if (patient.Upload != null)
             {
-                existingPatient.Upload =
-                    patient.Upload;
-
+                existingPatient.Upload = patient.Upload;
                 existingPatient.SavePatientImage(env);
             }
 
@@ -455,8 +379,7 @@ public class PatientController : Controller
         }
         catch (DbUpdateConcurrencyException)
         {
-            if (!PatientExists(
-                patient.PatientId))
+            if (!PatientExists( patient.PatientId))
             {
                 return NotFound();
             }
@@ -464,9 +387,10 @@ public class PatientController : Controller
             throw;
         }
 
-        return RedirectToAction(
-            nameof(Index));
+        return RedirectToAction( nameof(Index));
     }
+
+
 
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Delete(int? id)
@@ -474,18 +398,19 @@ public class PatientController : Controller
         if (id == null)
             return NotFound();
 
-        var patient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
+        var patient = await _context.Patients
+                .FirstOrDefaultAsync(p =>
                         p.PatientId == id &&
                         !p.IsDeleted);
+
 
         if (patient == null)
             return NotFound();
 
         return View(patient);
     }
+
+
 
     [HttpPost]
     [ActionName("Delete")]
@@ -497,10 +422,8 @@ public class PatientController : Controller
             return NotFound();
 
 
-        var patient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
+        var patient =await _context.Patients
+                .FirstOrDefaultAsync(p =>
                         p.PatientId == id &&
                         !p.IsDeleted);
 
@@ -509,24 +432,19 @@ public class PatientController : Controller
             return NotFound();
 
 
-        var hasPrescription =
-            await _context.Prescriptions
-                .AnyAsync(p =>
-                    p.PatientId == patient.PatientId);
+        var hasPrescription = await _context.Prescriptions
+                .AnyAsync(p => p.PatientId == patient.PatientId);
 
 
         if (hasPrescription)
         {
             patient.IsDeleted = true;
-
             patient.DeletedAt = DateTime.Now;
 
 
             if (!string.IsNullOrEmpty(patient.UserId))
             {
-                var user =
-                    await _userManager.FindByIdAsync(
-                        patient.UserId);
+                var user = await _userManager.FindByIdAsync( patient.UserId);
 
                 if (user != null)
                 {
@@ -544,9 +462,7 @@ public class PatientController : Controller
 
             if (!string.IsNullOrEmpty(patient.UserId))
             {
-                var user =
-                    await _userManager.FindByIdAsync(
-                        patient.UserId);
+                var user = await _userManager.FindByIdAsync(patient.UserId);
 
                 if (user != null)
                 {
@@ -573,10 +489,8 @@ public class PatientController : Controller
         if (id == null)
             return NotFound();
 
-        var patient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
+        var patient = await _context.Patients
+                .FirstOrDefaultAsync(p =>
                         p.PatientId == id &&
                         p.IsDeleted);
 
@@ -585,6 +499,8 @@ public class PatientController : Controller
 
         return View(patient);
     }
+
+
 
     [HttpPost]
     [ActionName("Restore")]
@@ -596,10 +512,8 @@ public class PatientController : Controller
         if (id == null)
             return NotFound();
 
-        var patient =
-            await _context.Patients
-                .FirstOrDefaultAsync(
-                    p =>
+        var patient = await _context.Patients
+                .FirstOrDefaultAsync(p =>
                         p.PatientId == id &&
                         p.IsDeleted);
 
@@ -611,9 +525,7 @@ public class PatientController : Controller
 
         if (!string.IsNullOrEmpty(patient.UserId))
         {
-            var user =
-                await _userManager.FindByIdAsync(
-                    patient.UserId);
+            var user =await _userManager.FindByIdAsync(patient.UserId);
 
             if (user != null)
             {
@@ -623,18 +535,19 @@ public class PatientController : Controller
 
         await _context.SaveChangesAsync();
 
-        return RedirectToAction(
-            nameof(Deleted));
+        return RedirectToAction(nameof(Deleted));
     }
+
+
+
+
 
     [Authorize(Roles = "Admin")]
     public async Task<IActionResult> Deleted()
     {
-        var deletedPatients =
-            await _context.Patients
+        var deletedPatients = await _context.Patients
                 .Where(p => p.IsDeleted)
-                .OrderByDescending(
-                    p => p.DeletedAt)
+                .OrderByDescending(p => p.DeletedAt)
                 .ToListAsync();
 
         return View(deletedPatients);
@@ -642,9 +555,7 @@ public class PatientController : Controller
 
     private bool PatientExists(int? id)
     {
-        return _context.Patients
-            .Any(
-                p =>
+        return _context.Patients.Any(p =>
                     p.PatientId == id &&
                     !p.IsDeleted);
     }

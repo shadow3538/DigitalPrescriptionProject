@@ -6,15 +6,15 @@ using Microsoft.AspNetCore.Identity;
 using DigitalPrescriptionProject.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
+
+
 [Authorize(Roles = "Admin,Doctor")]
 public class DoctorController : Controller
 {
     private readonly ApplicationDbContext _context;
     private readonly UserManager<ApplicationUser> _userManager;
 
-    public DoctorController(
-        ApplicationDbContext context,
-        UserManager<ApplicationUser> userManager)
+    public DoctorController( ApplicationDbContext context, UserManager<ApplicationUser> userManager)
     {
         _context = context;
         _userManager = userManager;
@@ -43,18 +43,14 @@ public class DoctorController : Controller
 
 
 
-        var prescriptions =
-            _context.Prescriptions
-                .Where(p =>
-                    p.DoctorId == doctor.DoctorId);
+        var prescriptions = _context.Prescriptions
+                .Where(p => p.DoctorId == doctor.DoctorId);
 
 
-        var totalPrescriptions =
-            await prescriptions.CountAsync();
+        var totalPrescriptions = await prescriptions.CountAsync();
 
 
-        var totalPatients =
-            await prescriptions
+        var totalPatients = await prescriptions
                 .Select(p => p.PatientId)
                 .Distinct()
                 .CountAsync();
@@ -64,8 +60,7 @@ public class DoctorController : Controller
 
         var tomorrow = today.AddDays(1);
 
-        var todayPrescriptions =
-            await prescriptions
+        var todayPrescriptions = await prescriptions
                 .CountAsync(p =>
                     p.VisitDate >= today &&
                     p.VisitDate < tomorrow);

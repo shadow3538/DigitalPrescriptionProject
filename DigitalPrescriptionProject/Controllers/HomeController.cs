@@ -21,25 +21,20 @@ namespace DigitalPrescriptionProject.Controllers
         public async Task<IActionResult> Index()
         {
 
-            ViewBag.DoctorCount =
-                await _context.Doctors.CountAsync();
+            ViewBag.DoctorCount = await _context.Doctors.CountAsync();
 
-            ViewBag.PatientCount =
-                await _context.Patients.CountAsync();
+            ViewBag.PatientCount = await _context.Patients.CountAsync();
 
-            ViewBag.PrescriptionCount =
-                await _context.Prescriptions.CountAsync();
+            ViewBag.PrescriptionCount = await _context.Prescriptions.CountAsync();
 
 
-            ViewBag.RecentDoctors =
-                await _context.Doctors
+            ViewBag.RecentDoctors = await _context.Doctors
                     .OrderByDescending(d => d.DoctorId)
                     .Take(5)
                     .ToListAsync();
 
 
-            ViewBag.RecentPatients =
-                await _context.Patients
+            ViewBag.RecentPatients = await _context.Patients
                     .OrderByDescending(p => p.PatientId)
                     .Take(5)
                     .ToListAsync();
