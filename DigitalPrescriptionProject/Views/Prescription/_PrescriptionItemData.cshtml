@@ -1,171 +1,82 @@
 ﻿@model DigitalPrescriptionProject.Models.Prescription
 
 <div class="table-responsive">
-
-    <table class="table table-bordered
-                  table-sm
-                  align-middle">
+    <table class="table table-bordered table-sm align-middle">
 
         <thead>
-
             <tr>
-
-
                 <th style="width: 90px;">
-
-                    <button type="button"
-                            class="btn btn-outline-primary
-                                   btn-sm
-                                   js-prescription-operation"
-                            data-operation="treatmentOperation"
-                            data-value="add">
-
-                        <i class="bi bi-plus-circle me-1"></i>
-
-                        Add
-
+                    <button type="submit"
+                            name="treatmentOperation"
+                            value="add"
+                            class="btn btn-outline-primary btn-sm"
+                            onclick="this.form.setAttribute('data-ajax', 'true');">
+                        + Add
                     </button>
-
                 </th>
 
-
-                <th>
-                    Medicine Name
-                </th>
-
-
-                <th>
-                    Dosage
-                </th>
-
-
-                <th>
-                    Duration
-                </th>
-
-
-                <th>
-                    Time
-                </th>
-
+                <th>Medicine Name</th>
+                <th>Dosage</th>
+                <th>Duration</th>
+                <th>Time</th>
             </tr>
-
         </thead>
 
-
         <tbody>
-
-            @for (
-                int i = 0;
-                i < Model.PrescriptionItems.Count;
-                i++)
+            @for (int i = 0; i < (Model.PrescriptionItems?.Count ?? 0); i++)
             {
                 <tr>
-
-
                     <td>
-
-                        <button type="button"
-                                class="btn btn-outline-danger
-                                       btn-sm
-                                       js-prescription-operation"
-                                data-operation="treatmentOperation"
-                                data-value="delete-@i">
-
-                            <i class="bi bi-trash me-1"></i>
-
+                        <button type="submit"
+                                name="treatmentOperation"
+                                value="delete-@i"
+                                class="btn btn-outline-danger btn-sm"
+                                onclick="this.form.setAttribute('data-ajax', 'true');">
                             Delete
-
                         </button>
-
                     </td>
 
-
                     <td>
-
-                        <input asp-for="
-                            PrescriptionItems[i]
-                                .PrescriptionItemId"
+                        <input asp-for="PrescriptionItems[i].PrescriptionItemId"
                                type="hidden" />
 
+                        <input asp-for="PrescriptionItems[i].MedicineName"
+                               class="form-control form-control-sm" />
 
-                        <input asp-for="
-                            PrescriptionItems[i]
-                                .MedicineName"
-                               class="form-control
-                                      form-control-sm" />
-
-
-                        <span asp-validation-for="
-                            PrescriptionItems[i]
-                                .MedicineName"
+                        <span asp-validation-for="PrescriptionItems[i].MedicineName"
                               class="text-danger">
                         </span>
-
                     </td>
-
-
 
                     <td>
+                        <input asp-for="PrescriptionItems[i].Dosage"
+                               class="form-control form-control-sm" />
 
-                        <input asp-for="
-                            PrescriptionItems[i]
-                                .Dosage"
-                               class="form-control
-                                      form-control-sm" />
-
-
-                        <span asp-validation-for="
-                            PrescriptionItems[i]
-                                .Dosage"
+                        <span asp-validation-for="PrescriptionItems[i].Dosage"
                               class="text-danger">
                         </span>
-
                     </td>
-
-
 
                     <td>
+                        <input asp-for="PrescriptionItems[i].Duration"
+                               class="form-control form-control-sm" />
 
-                        <input asp-for="
-                            PrescriptionItems[i]
-                                .Duration"
-                               class="form-control
-                                      form-control-sm" />
-
-
-                        <span asp-validation-for="
-                            PrescriptionItems[i]
-                                .Duration"
+                        <span asp-validation-for="PrescriptionItems[i].Duration"
                               class="text-danger">
                         </span>
-
                     </td>
-
-
 
                     <td>
+                        <input asp-for="PrescriptionItems[i].Time"
+                               class="form-control form-control-sm" />
 
-                        <input asp-for="
-                            PrescriptionItems[i]
-                                .Time"
-                               class="form-control
-                                      form-control-sm" />
-
-
-                        <span asp-validation-for="
-                            PrescriptionItems[i]
-                                .Time"
+                        <span asp-validation-for="PrescriptionItems[i].Time"
                               class="text-danger">
                         </span>
-
                     </td>
-
                 </tr>
             }
-
         </tbody>
 
     </table>
-
 </div>
